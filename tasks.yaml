@@ -1,0 +1,17 @@
+includes:
+  - create: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/create.yaml
+  - lint: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/lint.yaml
+  - pull: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/pull.yaml
+  - deploy: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/deploy.yaml
+  - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/setup.yaml
+
+tasks:
+  - name: default
+    description: Build and deploy SWF on UDS k3d-slim-dev
+    actions:
+      - task: setup:k3d-test-cluster
+
+  - name: destroy
+    description: Destroy the K3d cluster
+    actions:
+      - cmd: k3d cluster delete -a
