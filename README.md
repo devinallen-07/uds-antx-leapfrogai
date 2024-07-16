@@ -41,3 +41,19 @@ graph LR
 - Test State
 - Clock Status
 - Performance Metrics
+
+## Evaluation Criteria
+
+(ordered by importance)
+1. Operational Impact - (use of technology in the intended mission scenarios and operational environment)
+2. Operational Impact (future) - (use of technology in future mission scenarios and operational environment)
+3. f1 score for test prediction - f1 = 2*((precision*recall)/(precision+recall)
+4. precision for test state prediction - Number of True Positives / (Number of True Positives + Number of False Positives)
+5. recall for test state prediction - Number of True Positives / (Number of True Positives + Number of False Negatives)
+6. accuracy for test state prediction - (Number of Correct Predictions / Total Number of Predictions) * 100
+7. mean absolute error (MAE) for time to next state prediction - average absolute difference between the anticipated and actual values of the target variable
+8. Root mean Squared Error (RSME) for time to next state prediction - square root of the average squared error between teh target variable and its projected value
+9. Word Error Rate (WER) for transcription - WER = (Substitutions + Deletions + Insertions) / Total Words
+10. Integration complexity of the technology/engineering innovation
+11. Quality and utility of the user interface
+12. Average Wait Time - Average time between disruption (defined as something that would cause a delay; weather, system checks, conflicts, etc.) and game clock update
