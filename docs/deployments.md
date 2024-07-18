@@ -6,13 +6,31 @@ Docs on deploying the UDS ANTX LeapfrogAI solution.
 
 Deploy UDS LeapfrogAI using [these instructions](https://docs.leapfrog.ai/docs/local-deploy-guide/quick_start/#cpu)
 
-TLDR;
-
 ```sh
-# Clone LeapfrogAI repo
+# First Clone LeapfrogAI repo
 cd uds-bundles/latest/cpu/
 uds create .
-uds deploy k3d-core-slim-dev:0.22.2
+uds deploy k3d-core-slim-dev:0.22.0
+uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
+```
+
+To Access the Leapfrog UI (via ai.uds.dev)
+```sh
+uds zarf connect keycloak
+# Create Admin User
+# open ai.uds.dev and register an account
+```
+
+## GPU Deployment
+
+Deploy UDS LeapfrogAI using [these instructions](https://docs.leapfrog.ai/docs/local-deploy-guide/quick_start/#gpu)
+Note: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) is required for GPU support
+
+```sh
+# First Clone LeapfrogAI repo
+cd uds-bundles/latest/gpu/
+uds create .
+uds deploy k3d-core-slim-dev:0.24.0 --set K3D_EXTRA_ARGS="--gpus=all --image=ghcr.io/justinthelaw/k3d-gpu-support:v1.27.4-k3s1-cuda" --confirm
 uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
 ```
 
