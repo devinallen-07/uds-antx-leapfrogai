@@ -1,0 +1,73 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Event Information",
+    "type": "object",
+    "properties": {
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "eventStart": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 format date and time when the event starts."
+          },
+          "timeToNextEvent": {
+            "type": "string",
+            "description": "Duration in HH:MM:SS format to the next event."
+          },
+          "runningClock": {
+            "type": "string",
+            "description": "Current running clock in HH:MM:SS format."
+          }
+        },
+        "required": ["eventStart", "timeToNextEvent", "runningClock"]
+      },
+      "state": {
+        "type": "object",
+        "properties": {
+          "currentState": {
+            "type": "string",
+            "enum": ["active", "checkout", "pre-mission", "delay", "post", "return"],
+            "description": "The current state of the event."
+          },
+          "delay": {
+            "type": ["object", "null"],
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "The reason for the delay."
+              },
+              "predictedResolutionTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Predicted resolution time in ISO 8601 format."
+              }
+            },
+            "required": ["reason", "predictedResolutionTime"]
+          }
+        },
+        "required": ["currentState"]
+      },
+      "transcription": {
+        "type": "object",
+        "properties": {
+          "speechToText": {
+            "type": "string",
+            "description": "Live transcription feed of the event."
+          }
+        },
+        "required": ["speechToText"]
+      },
+      "performanceMetrics": {
+        "type": "object",
+        "properties": {
+          "importantMetrics": {
+            "type": "string",
+            "description": "Description of what is most important to the user in terms of performance metrics."
+          }
+        },
+        "required": ["importantMetrics"]
+      }
+    },
+    "required": ["metadata", "state", "transcription", "performanceMetrics"]
+  }
