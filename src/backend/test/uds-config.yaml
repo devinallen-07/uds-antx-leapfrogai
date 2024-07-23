@@ -1,0 +1,10 @@
+variables:
+  uds-k3d-dev:
+    buckets:
+      - name: "antx"
+        policy: "public"
+        purge: false
+    users:
+      - accessKey: test-user
+        secretKey: test-secret
+        policy: "readwrite"

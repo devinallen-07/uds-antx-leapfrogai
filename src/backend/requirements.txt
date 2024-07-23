@@ -1,0 +1,8 @@
+pandas
+numpy
+pathlib
+redis
+boto3
+fastapi
+pydantic
+requests
