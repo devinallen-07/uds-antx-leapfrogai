@@ -52,4 +52,3 @@ class Update(BaseModel):
 class LastUpdate(BaseModel):
    updateTime: str = Field(description = "YYYY-MM-DDTHH:MM:SS datetime format", examples=['2024-04-01T17:32:47'])
    lastState: State = Field(description="The current state")
-   
