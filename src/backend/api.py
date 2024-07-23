@@ -7,7 +7,7 @@ app = FastAPI()
 async def start() -> Update:
    return Update()
 
-@app.get("/end/", status_code=204)
+@app.get("/end/", status_code=200)
 async def end() -> Update:
    return Update()
 
