@@ -1,3 +1,2 @@
 zarf-sbom
-*/__pycache__
-*/.ipynb*
+/__pycache__/*
