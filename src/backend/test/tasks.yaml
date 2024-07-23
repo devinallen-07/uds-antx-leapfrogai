@@ -1,0 +1,24 @@
+tasks:
+  - name: up
+    description: brings up everything from scratch (uds-slim-dev included)
+    actions:
+      - task: uds-up
+      - task: package-up
+  - name: down
+    description: bring everything down
+    actions:
+      - task: uds-down
+  - name: uds-up
+    description: Brings up uds-slim-dev
+    actions:
+      - dir: test
+        shell:
+          darwin: bash
+          linux: bash
+        cmd: |
+          set -a; source ../.env; set +a
+          uds deploy k3d-core-slim-dev:${UDS_CORE_VERSION} -c --no-progress
+  - name: uds-down
+    description: Brings down uds-slim-dev and everything it contains
+    actions:
+      - cmd: k3d cluster delete uds
