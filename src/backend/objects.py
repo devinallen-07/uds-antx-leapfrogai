@@ -3,6 +3,7 @@ from typing import List, Optional
 from enum import Enum
 
 class CurrentState(Enum):
+   pre_trial_start = "Pre Trial Start"
    trial_start = "Trial Start"
    trial_end = "Trial End"
    delay_start = "Delay Start"
