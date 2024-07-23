@@ -27,7 +27,7 @@
         "properties": {
           "currentState": {
             "type": "string",
-            "enum": ["active", "checkout", "pre-mission", "delay", "post", "return"],
+            "enum": ["start", "end", "delay-start", "delay-end", "in-transit", "mistrial", "return", "other"],
             "description": "The current state of the event."
           },
           "delay": {
@@ -35,6 +35,7 @@
             "properties": {
               "reason": {
                 "type": "string",
+                "enum": ["vendor","npc","software","towing", "other"],
                 "description": "The reason for the delay."
               },
               "predictedResolutionTime": {
