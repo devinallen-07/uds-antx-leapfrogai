@@ -7,7 +7,10 @@ from logs import get_logger
 log = get_logger()
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[]):
-   return None
+   raise NotImplementedError
 
 def transcribe():
-   return None
+   raise NotImplementedError
+
+def inference():
+   raise NotImplementedError

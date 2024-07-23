@@ -15,7 +15,7 @@ class Listener:
 
    #TODO: implement
    def process_message(self, data):
-      return None
+      raise NotImplementedError
 
    def run(self):
       r = self.r

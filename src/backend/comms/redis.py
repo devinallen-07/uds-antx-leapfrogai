@@ -27,4 +27,5 @@ def get_redis_connection():
       return REDIS_ENGINE
    
 def get_processed_files():
+   raise NotImplementedError
    return []
