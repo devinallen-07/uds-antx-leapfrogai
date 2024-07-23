@@ -27,7 +27,7 @@
         "properties": {
           "currentState": {
             "type": "string",
-            "enum": ["start", "end", "delay-start", "delay-end", "in-transit", "mistrial", "return", "other"],
+            "enum": ["Trial Start", "Trial End", "Delay Start", "Delay End", "In Transit", "Mistrial", "RTB"],
             "description": "The current state of the event."
           },
           "delay": {
@@ -35,7 +35,7 @@
             "properties": {
               "reason": {
                 "type": "string",
-                "enum": ["vendor","npc","software","towing", "other"],
+                "enum": ["vendor issues causing delay in trial execution","Unauthorized craft enters OP area (NPC = non-personnel craft)","Boat experiences network drops or software crashes","Boat loses power, must be towed out of OP area"],
                 "description": "The reason for the delay."
               },
               "predictedResolutionTime": {
