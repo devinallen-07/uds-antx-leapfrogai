@@ -8,9 +8,9 @@ async def start():
    return {'event_id':1}
 
 @app.get("/end/", status_code=204)
-def end():
+async def end():
    return None
 
 @app.get("/update/", status_code=200)
-def update(item: LastUpdate) -> Update:
+async def update(item: LastUpdate) -> Update:
    return Update()
