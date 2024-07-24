@@ -1,5 +1,5 @@
 <script>
-	import { Badge, Card, Alert } from 'flowbite-svelte';
+	import { Card } from 'flowbite-svelte';
 	export let states = [
 		{
 			stateOption: ''
