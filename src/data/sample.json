@@ -1,0 +1,36 @@
+{
+  // UI will reconcile the timestamps from the server in the UI
+  "metadata": {
+    "eventStart": "2023-04-01T00:00:00Z",
+    "timeToNextEvent": "00:30:00",
+    "runningClock": "00:15:00"
+  },
+  "state": {
+    // choose from {"Trial Start", "Trial End", "Delay Start", "Delay End", "In Transit", "Mistrial", "RTB"}
+    "currentState": "Start",
+    // delay is null if no delay is present
+    "delay": {
+      // choose from {Vendor,NPC,Software,Towing}
+      "reason": "Boat loses power, must be towed out of OP area",
+      "predictedResolutionTime": "2023-04-01T02:00:00Z"
+    }
+  },
+  // time ordered transcription feed (array/list)
+  "transcription": [
+    "Live Transcription Feed",
+    "is this thing on?",
+    "confirm thing is on"
+  ],
+  "performanceMetrics": {
+    "timeToTranscribePerToken": {
+      "min": 23.1,
+      "max": 60.0,
+      "avg": 32.5
+    },
+    "timeToInference": {
+      "min": 23.1,
+      "max": 60.0,
+      "avg": 32.5
+    }
+  }
+}
