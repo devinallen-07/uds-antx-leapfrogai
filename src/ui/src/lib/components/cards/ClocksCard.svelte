@@ -10,7 +10,7 @@
 
 <div class="m-4 flex flex-wrap justify-center text-lg">
 	{#each testimonials as testimonial}
-		<Badge>{testimonial.title1}</Badge>
+		<p class="m-2 text-lg dark:text-white">{testimonial.title1}</p>
 		<Badge border>{testimonial.title2}</Badge>
 	{/each}
 </div>

@@ -1,0 +1,36 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	export let list = [''];
+
+	let contentContainer: HTMLElement | null = null;
+
+	onMount(() => {
+		if (contentContainer) {
+			contentContainer.scrollTop = contentContainer.scrollHeight;
+		}
+	});
+</script>
+
+<p class="text-center text-lg dark:text-white">Transcript</p>
+<div bind:this={contentContainer} class="mx-auto h-48 w-11/12 overflow-auto">
+	<ol class="custom-ol rounded-lg bg-gray-800 p-4 text-white">
+		{#each list as line}
+			<li class="custom-li-content">{line}</li>
+		{/each}
+	</ol>
+</div>
+
+<style>
+	.custom-ol li {
+		counter-increment: custom-counter;
+	}
+	.custom-ol li::before {
+		content: counter(custom-counter);
+		margin-right: 6px;
+	}
+	.custom-li-content {
+		display: inline-block;
+		max-width: calc(100% - 30px); /* Adjusts max width to prevent overlap with the counter */
+		vertical-align: top; /* Aligns content at the top */
+	}
+</style>

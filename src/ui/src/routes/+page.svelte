@@ -1,7 +1,8 @@
 <script lang="ts">
 	import ClocksCard from '$lib/components/cards/ClocksCard.svelte';
 	import StateCard from '$lib/components/cards/StateCard.svelte';
-	import SpeechToTextCard from '$lib/components/cards/SpeechToTextCard.svelte';
+	import Transcript from '$lib/components/cards/Transcript.svelte';
+	import SpeechToTextCard from '$lib/components/cards/Transcript.svelte';
 
 	const testimonials = [
 		{
@@ -21,13 +22,33 @@
 	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'RTB', 'Trial End'];
 
 	const delayStates = ['Delay Start', 'Delay End'];
+
+	const dummyTranscript = [
+		'Alpha: Tango 1, this is Bravo Actual, over.',
+		'Tango 1: Bravo Actual, this is Tango 1, go ahead, over.',
+		'Bravo Actual: Tango 1, be advised, enemy forces spotted at grid coordinates 123456, over.',
+		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
+		'Alpha: Tango 1, this is Bravo Actual, over.',
+		'Tango 1: Bravo Actual, this is Tango 1, go ahead, over.',
+		'Bravo Actual: Tango 1, be advised, enemy forces spotted at grid coordinates 123456, over.',
+		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
+		'Alpha: Tango 1, this is Bravo Actual, over.',
+		'Tango 1: Bravo Actual, this is Tango 1, go ahead, over.',
+		'Bravo Actual: Tango 1, be advised, enemy forces spotted at grid coordinates 123456, over.',
+		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
+		'Alpha: Tango 1, this is Bravo Actual, over.',
+		'Tango 1: Bravo Actual, this is Tango 1, go ahead, over.',
+		'Bravo Actual: Tango 1, be advised, enemy forces spotted at grid coordinates 123456, over.',
+		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
+		'end'
+	];
 </script>
 
 <div>
 	<ClocksCard {testimonials} />
 	<StateCard list={states} />
 	<StateCard list={delayStates} />
-	<SpeechToTextCard />
+	<Transcript list={dummyTranscript} />
 
 	<div class="section">
 		<div class="section-title">Performance Metrics</div>
