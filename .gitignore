@@ -1,1 +1,4 @@
 zarf-sbom
+*.pyc
+*.env
+*checkpoint.ipynb
