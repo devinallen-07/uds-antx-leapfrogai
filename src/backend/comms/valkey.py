@@ -11,7 +11,7 @@ REDIS_ENGINE = None
 
 def create_valkey_connection():
    host = os.environ.get('REDIS_HOST')
-   pwd = os.environ.get('REDIS_PASSSWORD')
+   pwd = os.environ.get('REDIS_PASSSWORD', 'test-password')
    port = os.environ.get('REDIS_PORT', '6379')
    r = redis.Redis(host=host, port=port, password=pwd)
    REDIS_ENGINE = r
@@ -33,7 +33,7 @@ def get_output_frame(key):
    df = pd.read_json(StringIO(r.get(key).decode('utf-8')))
    return df
 
-def put_output_frame(df, key):
+def set_output_frame(key, df):
    r = get_valkey_connection()
    r.set(key, df.to_json())
 
