@@ -1,5 +1,5 @@
 from antx.src.backend.comms.valkey import get_valkey_connection
-from logs import get_logger, setup_logging
+from util.logs import get_logger, setup_logging
 import os
 import json
 import traceback

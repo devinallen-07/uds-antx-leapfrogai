@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from objects import Update, LastUpdate
+from util.objects import Update, LastUpdate
 
 app = FastAPI()
 

@@ -4,7 +4,7 @@ import os
 import argparse
 from comms.valkey import get_processed_files()
 from comms.s3 import get_objects
-from logs import get_logger, setup_logging()
+from util.logs import get_logger, setup_logging()
 
 log = get_logger()
 

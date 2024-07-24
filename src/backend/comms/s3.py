@@ -1,7 +1,7 @@
 import boto3
 import os
 import traceback
-from logs import get_logger
+from util.logs import get_logger
 
 log = get_logger()
 
