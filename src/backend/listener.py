@@ -39,8 +39,8 @@ class Listener:
             try:
                self.process_message(message['data'])
             except Exception as e:
-               log.warn(f'Error processing message: {message}, {e}')
-               log.warn(traceback.format_exc())
+               log.warning(f'Error processing message: {message}, {e}')
+               log.warning(traceback.format_exc())
          else:
             log.info(f'Non-message received: {message}')
 
