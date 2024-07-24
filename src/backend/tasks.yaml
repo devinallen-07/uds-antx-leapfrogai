@@ -35,7 +35,7 @@ tasks:
           fi
       - cmd: |
           uds zarf -l debug --no-log-file --no-progress package deploy \
-          zarf-package-argo-workflows-*.tar.zst --confirm
+          zarf-package-antx-backend-*.tar.zst --confirm
   - name: remove-package
     description: Removes the zarf package and cleans up files
     actions:

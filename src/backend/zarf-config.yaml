@@ -6,5 +6,3 @@ package:
       S3_BUCKET_NAME: antx
       S3_ENDPOINT: minio.uds-dev-stack.svc.cluster.local:9000
       REDIS_PASSWORD: test-password
-      REDIS_HOST: valkey-master.antx.svc.cluster.local
-      REDIS_PORT: 6379

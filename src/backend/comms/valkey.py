@@ -1,5 +1,8 @@
 import redis
+import json
+import pandas as pd
 import os
+from io import StringIO
 from logs import get_logger
 
 log = get_logger()
@@ -25,9 +28,21 @@ def get_valkey_connection():
          return create_valkey_connection()
       return REDIS_ENGINE
    
-def put_transcription():
-   raise NotImplementedError
-   
-def get_processed_files():
-   raise NotImplementedError
-   return []
+def get_output_frame(key):
+   r = get_valkey_connection()
+   df = pd.read_json(StringIO(r.get(key).decode('utf-8')))
+   return df
+
+def put_output_frame(df, key):
+   r = get_valkey_connection()
+   r.set(key, df.to_json())
+
+
+def get_processed_files(key):
+   r = get_valkey_connection()
+   files = list(json.loads(r.get(key)))
+   return files
+
+def set_processed_files(key, files):
+   r = get_valkey_connection()
+   r.set(key, json.dumps(files))
