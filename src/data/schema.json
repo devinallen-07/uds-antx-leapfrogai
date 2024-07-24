@@ -1,74 +1,103 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Event Information",
-    "type": "object",
-    "properties": {
-      "metadata": {
-        "type": "object",
-        "properties": {
-          "eventStart": {
-            "type": "string",
-            "format": "date-time",
-            "description": "ISO 8601 format date and time when the event starts."
-          },
-          "timeToNextEvent": {
-            "type": "string",
-            "description": "Duration in HH:MM:SS format to the next event."
-          },
-          "runningClock": {
-            "type": "string",
-            "description": "Current running clock in HH:MM:SS format."
-          }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event Information",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "eventStart": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 format date and time when the event starts."
         },
-        "required": ["eventStart", "timeToNextEvent", "runningClock"]
+        "timeToNextEvent": {
+          "type": "string",
+          "description": "Duration in HH:MM:SS format to the next state change."
+        },
+        "runningClock": {
+          "type": "string",
+          "description": "Current running clock in HH:MM:SS format."
+        }
       },
-      "state": {
-        "type": "object",
-        "properties": {
-          "currentState": {
-            "type": "string",
-            "enum": ["Trial Start", "Trial End", "Delay Start", "Delay End", "In Transit", "Mistrial", "RTB"],
-            "description": "The current state of the event."
-          },
-          "delay": {
-            "type": ["object", "null"],
-            "properties": {
-              "reason": {
-                "type": "string",
-                "enum": ["vendor issues causing delay in trial execution","Unauthorized craft enters OP area (NPC = non-personnel craft)","Boat experiences network drops or software crashes","Boat loses power, must be towed out of OP area"],
-                "description": "The reason for the delay."
-              },
-              "predictedResolutionTime": {
-                "type": "string",
-                "format": "date-time",
-                "description": "Predicted resolution time in ISO 8601 format."
-              }
-            },
-            "required": ["reason", "predictedResolutionTime"]
-          }
-        },
-        "required": ["currentState"]
-      },
-      "transcription": {
-        "type": "object",
-        "properties": {
-          "speechToText": {
-            "type": "string",
-            "description": "Live transcription feed of the event."
-          }
-        },
-        "required": ["speechToText"]
-      },
-      "performanceMetrics": {
-        "type": "object",
-        "properties": {
-          "importantMetrics": {
-            "type": "string",
-            "description": "Description of what is most important to the user in terms of performance metrics."
-          }
-        },
-        "required": ["importantMetrics"]
-      }
+      "required": ["eventStart", "timeToNextEvent", "runningClock"]
     },
-    "required": ["metadata", "state", "transcription", "performanceMetrics"]
-  }
+    "state": {
+      "type": "object",
+      "properties": {
+        "currentState": {
+          "type": "string",
+          "enum": ["Pre Trial Start", "Trial Start", "Trial End", "Delay Start", "Delay End", "In Transit", "Mistrial", "RTB"],
+          "description": "The current state of the event."
+        },
+        "delay": {
+          "type": ["object", "null"],
+          "properties": {
+            "reason": {
+              "type": "string",
+              "enum": ["vendor issues causing delay in trial execution", "Unauthorized craft enters OP area (NPC = non-personnel craft)", "Boat experiences network drops or software crashes", "Boat loses power, must be towed out of OP area"],
+              "description": "The reason for the delay."
+            },
+            "predictedResolutionTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Predicted resolution time in ISO 8601 format."
+            }
+          },
+          "required": ["reason", "predictedResolutionTime"]
+        }
+      },
+      "required": ["currentState"]
+    },
+    "transcription": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Time-ordered transcription feed."
+    },
+    "performanceMetrics": {
+      "type": "object",
+      "properties": {
+        "timeToTranscribePerToken": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number",
+              "description": "Minimum time to transcribe per token."
+            },
+            "max": {
+              "type": "number",
+              "description": "Maximum time to transcribe per token."
+            },
+            "avg": {
+              "type": "number",
+              "description": "Average time to transcribe per token."
+            }
+          },
+          "required": ["min", "max", "avg"]
+        },
+        "timeToInference": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number",
+              "description": "Minimum time to inference."
+            },
+            "max": {
+              "type": "number",
+              "description": "Maximum time to inference."
+            },
+            "avg": {
+              "type": "number",
+              "description": "Average time to inference."
+            }
+          },
+          "required": ["min", "max", "avg"]
+        }
+      },
+      "required": ["timeToTranscribePerToken", "timeToInference"]
+    }
+  },
+  "required": ["metadata", "state", "transcription", "performanceMetrics"]
+}
