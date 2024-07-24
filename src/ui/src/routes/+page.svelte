@@ -22,23 +22,29 @@
 
 	const states = [
 		{
-			stateOption: 'System Checkout'
+			stateOption: 'Pre Trial Start'
 		},
 		{
-			stateOption: 'Pre-Mission'
+			stateOption: 'Trial Start'
 		},
 		{
-			stateOption: 'Active Trial'
+			stateOption: 'In Transit'
 		},
 		{
-			stateOption: 'Trial Pause/Delay'
+			stateOption: 'Mistrial'
 		},
 		{
-			stateOption: 'Post-Trial'
+			stateOption: 'RTB'
 		},
 		{
-			stateOption: 'Return to Base'
+			stateOption: 'Trial End'
 		},
+		// {
+		// 	stateOption: 'Delay Start'
+		// },
+		// {
+		// 	stateOption: 'Delay End'
+		// }
 	]
 
 </script>
