@@ -1,7 +1,7 @@
 import redis
 import pandas
 import numpy
-from comms.redis import get_redis_connection
+from antx.src.backend.comms.valkey import get_valkey_connection
 from logs import get_logger, setup_logging
 import os
 

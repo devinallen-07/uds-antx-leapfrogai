@@ -1,0 +1,44 @@
+tasks:
+  - name: up
+    description: brings up everything from scratch (uds-slim-dev included)
+    actions:
+      - task: uds-up
+      - task: build-package
+  - name: down
+    description: bring everything down
+    actions:
+      - task: uds-down
+  - name: uds-up
+    description: Brings up uds-slim-dev
+    actions:
+      - dir: test
+        shell:
+          darwin: bash
+          linux: bash
+        cmd: uds deploy k3d-core-slim-dev:0.24.0 -c --no-progress
+  - name: uds-down
+    description: Brings down uds-slim-dev and everything it contains
+    actions:
+      - cmd: k3d cluster delete uds
+  - name: build-package
+    description: Builds the backend zarf package
+    actions:
+      - cmd: uds zarf package create --confirm --skip-sbom
+      - cmd: cp test/zarf-config-dev.yaml zarf-config.yaml
+  - name: deploy-package
+    description: Deploys the zarf package
+    actions:
+      - cmd: |
+          if [ ! -f zarf-config.yaml ]; then \
+            echo "No zarf-config.yaml found, exiting!"; \
+            exit 1; \
+          fi
+      - cmd: |
+          uds zarf -l debug --no-log-file --no-progress package deploy \
+          zarf-package-argo-workflows-*.tar.zst --confirm
+  - name: remove-package
+    description: Removes the zarf package and cleans up files
+    actions:
+      - cmd: uds zarf package remove zarf-package-antx-backend-*.tar.zst --confirm
+      - cmd: rm zarf-config.yaml
+      - cmd: rm zarf-package-*.tar.zst

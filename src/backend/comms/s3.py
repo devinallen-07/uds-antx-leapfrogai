@@ -1,7 +1,7 @@
 import boto3
 import os
 from logs import get_logger
-from comms.redis import get_processed_files
+from antx.src.backend.comms.valkey import get_processed_files
 
 log = get_logger()
 
