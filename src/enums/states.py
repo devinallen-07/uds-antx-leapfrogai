@@ -6,4 +6,4 @@ class States(Enum):
     DELAY_START='Delay Start'
     DELAY_END='Delay End'
     MISTRIAL='Mistrial'
-    RTB='Return to Base'
+    RTB='RTB'
