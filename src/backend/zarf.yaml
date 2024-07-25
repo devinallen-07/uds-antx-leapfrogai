@@ -1,0 +1,45 @@
+ind: ZarfPackageConfig
+metadata:
+  name: antx-backend
+  description: Templated deployment of Antx backend
+  version: 0.0.1
+variables:
+  - name: REDIS_PASSWORD
+    description: The user to access the argo database in postgres
+    prompt: true
+  - name: S3_ENDPOINT
+    description: 'Endpoint to use to connect to S3. Example: "s3.amazonaws.com" or "minio.bigbang.dev"'
+    prompt: true
+  - name: S3_REGION
+    description: 'Region of the S3 bucket'
+    prompt: true
+  - name: S3_BUCKET_NAME
+    description: 'Name of the S3 bucket to use'
+    prompt: true
+  - name: S3_ACCESS_KEY
+    description: The Access key for the S3 service
+    prompt: true
+    sensitive: true
+  - name: S3_SECRET_KEY
+    description: The Secret key for the S3 service
+    prompt: true
+    sensitive: true
+components:
+  - name: antx-setup
+    required: true
+    manifests:
+      - name: namespace
+        files:
+          - manifests/namespace.yaml
+  - name: valkey-deployment
+    required: true
+    charts:
+      - name: valkey
+        namespace: antx
+        version: 0.3.10
+        url: https://charts.bitnami.com/bitnami
+        repoName: valkey
+        valuesFiles:
+          - values/valkey.yaml
+    images:
+      - bitnami/valkey:7.2.5-debian-12-r7

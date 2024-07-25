@@ -1,6 +1,6 @@
 zarf-sbom
-*.pyc
-*.env
-*checkpoint.ipynb
+*pycache*
+*.ipynb*
 data/*
 .DS_Store
+*.env

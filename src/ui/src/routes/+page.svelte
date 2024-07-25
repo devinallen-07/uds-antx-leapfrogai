@@ -45,18 +45,17 @@
 	];
 </script>
 
-<div>
-	<ClocksCard {testimonials} />
-	<StateCard list={states} />
-	<StateCard list={delayStates} />
+<ClocksCard {testimonials} />
+<StateCard list={states} />
+<StateCard list={delayStates} />
 
-	<Accordion>
-		<AccordionItem open class="mx-auto w-5/6">
-			<span slot="header">Transcript</span>
-			<Transcript list={dummyTranscript} />
-		</AccordionItem>
-		<AccordionItem open class="mx-auto w-5/6">
-			<span slot="header">Performance Metrics</span>
-		</AccordionItem>
-	</Accordion>
-</div>
+<Accordion multiple class="mx-auto w-5/6">
+	<AccordionItem open>
+		<span slot="header">Transcript</span>
+		<Transcript list={dummyTranscript} />
+	</AccordionItem>
+	<AccordionItem open>
+		<span slot="header">Performance Metrics</span>
+		<PerformanceCard />
+	</AccordionItem>
+</Accordion>
