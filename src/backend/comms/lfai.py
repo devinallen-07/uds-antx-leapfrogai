@@ -53,7 +53,7 @@ def dummy_inference(current_state, data):
       data['delay_type'] = random.choice(list(DelayReason)).value
       data['delay_resolution'] = formatted_time_to_change
    else:
-      data["delay_reason"] = ""
+      data["delay_type"] = ""
    data["time_to_change"] = formatted_time_to_change
    time.sleep(random.randint(1, 5))
    data['inference_seconds'] = time.time() - t1
