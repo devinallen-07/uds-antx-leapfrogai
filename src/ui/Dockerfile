@@ -1,5 +1,5 @@
 # Stage 1: Build the SvelteKit app
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 # Set the working directory in the container
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY . .
 RUN pnpm run build
 
 # Stage 2: Serve the built SvelteKit app
-FROM node:20-alpine AS serve
+FROM node:22-alpine AS serve
 
 # Install serve globally
 RUN npm install -g serve
