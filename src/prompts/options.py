@@ -4,7 +4,7 @@ mag_four = {"Options": [States.TRIAL_START.value,
                         States.DELAY_START.value,
                         States.MISTRIAL.value,
                         States.RTB.value]}
-state_options = {
+next_state_options = {
     States.TRIAL_START.value : 
         {"Options": 
             [States.TRIAL_END.value, 

@@ -1,4 +1,4 @@
-from src.prompts.options import state_options
+from src.prompts.options import next_state_options
 from src.enums.states import States 
 
 trial_start = States.TRIAL_START.value 
@@ -16,11 +16,11 @@ Context: You will be provided with two items:\n
     - Should the "Current State" change given the content/meaning of the text transmission.
     - If the "Current State" should be changed, predict the next state based on the content/meaning of the text transmission.
     - Prediction Rules: Predicted states must adhere to the following structured options:
-        {trial_start}:\t {next_state_header} {state_options[trial_start]['Options']}
-        {trial_end}:\t {next_state_header} {state_options[trial_end]['Options']}
-        {delay_start}:\t {next_state_header} {state_options[delay_start]['Options']}
-        {delay_end}:\t {next_state_header} {state_options[delay_end]['Options']}
-        {mistrial}:\t {next_state_header} {state_options[mistrial]['Options']}
+        {trial_start}:\t {next_state_header} {next_state_options[trial_start]['Options']}
+        {trial_end}:\t {next_state_header} {next_state_options[trial_end]['Options']}
+        {delay_start}:\t {next_state_header} {next_state_options[delay_start]['Options']}
+        {delay_end}:\t {next_state_header} {next_state_options[delay_end]['Options']}
+        {mistrial}:\t {next_state_header} {next_state_options[mistrial]['Options']}
 Output Format: Return your response as a json object in the following format:\n
     - If you determine that no change in state is warranted simply return the current state as json as follows:
         {{"current_state": <current state>}}
