@@ -11,7 +11,7 @@ from util.logs import get_logger
 from util.objects import CurrentState, DelayReason
 from util.loaders import format_timediff
 
-log = getLogger()
+log = get_logger()
 
 URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
 URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
@@ -21,31 +21,42 @@ LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY')
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
-LFAI_KEY = os.environ.get("LFAI_KEY")
 
 STATE_CHANGE_PROB = .01
 
 def dummy_transcribe(file_path):
    t1 = time.time()
    length = random.randint(20, 30)
-   res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+   res = random.choices(string.ascii_uppercase + string.digits, k=length)
    time.sleep(random.randint(4,7))
    t2 = time.time()
-   return res, t2-t1
+   result = {
+      "transcription": res,
+      "performanceMetrics": {
+         "timeToTranscribe": t2 - t1,
+         "tokens": random.randint(10,20)
+      }
+   }
+   return json.dumps(result)
 
-def dummy_inference(current_state):
+def dummy_inference(current_state, data):
    t1 = time.time()
-   data = {}
    seconds_to_next_event = random.randint(0, 120)
    formatted_time_to_change = format_timediff(seconds_to_next_event)
+   predicted_state = random.choice(list(CurrentState)).value
    if random.random() < STATE_CHANGE_PROB:
-      current_state = random.choice(list(CurrentState)).value
+      current_state = predicted_state
+      predicted_state = random.choice(list(CurrentState)).value
    data['state'] = current_state
+   data['predicted_state'] = predicted_state
    if current_state == 'Delay Start':
-      data['delay_reason'] = random.choice(list(DelayReason)).value
+      data['delay_type'] = random.choice(list(DelayReason)).value
       data['delay_resolution'] = formatted_time_to_change
+   else:
+      data["delay_reason"] = ""
+   data["time_to_change"] = formatted_time_to_change
    time.sleep(random.randint(1, 5))
-   data['seconds'] = time.time() - t1
+   data['inference_seconds'] = time.time() - t1
    return data  
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
@@ -115,6 +126,7 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
 
    transcriptions = []
    times = []
+   tokens = 0
 
    with tempfile.TemporaryDirectory() as temp_dir:
       for i, (start, end) in enumerate(chunks):
@@ -127,11 +139,13 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
          
          transcription, time_taken = transcribe_audio(chunk_path)
          transcriptions.append(transcription)
+         tokens += len(transcriptions.split(' '))
          times.append(time_taken)
 
    # Calculate performance metrics  
    performance_metrics = {
-      "timeToTranscribe": sum(times)     
+      "timeToTranscribe": sum(times) ,
+      "tokens": tokens    
    }
 
    result = {
