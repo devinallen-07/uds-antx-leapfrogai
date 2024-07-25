@@ -40,7 +40,7 @@
 		'Tango 1: Bravo Actual, this is Tango 1, go ahead, over.',
 		'Bravo Actual: Tango 1, be advised, enemy forces spotted at grid coordinates 123456, over.',
 		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
-		'end'
+		'short line'
 	];
 </script>
 

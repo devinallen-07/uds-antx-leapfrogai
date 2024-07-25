@@ -15,7 +15,9 @@
 <div bind:this={contentContainer} class="mx-auto h-48 w-11/12 overflow-auto">
 	<ol class="custom-ol rounded-lg bg-gray-800 p-4 text-white">
 		{#each list as line}
-			<li class="custom-li-content">{line}</li>
+			<li>
+				<span class="custom-li-content">{line}</span>
+			</li>
 		{/each}
 	</ol>
 </div>
@@ -30,7 +32,6 @@
 	}
 	.custom-li-content {
 		display: inline-block;
-		max-width: calc(100% - 30px); /* Adjusts max width to prevent overlap with the counter */
 		vertical-align: top; /* Aligns content at the top */
 	}
 </style>
