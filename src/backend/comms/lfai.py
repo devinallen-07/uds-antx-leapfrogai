@@ -1,22 +1,50 @@
 import requests
-import pandas as pd
-import numpy as np
+import random
+import string
+import time
 import os
-from logging import getLogger
 import time as time
 import json
 import subprocess
 import tempfile
+from util.logs import get_logger
+from util.objects import CurrentState, DelayReason
+from util.loaders import format_timediff
 
 log = getLogger()
 
 URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
 URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
+
+# need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY')
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
+LFAI_KEY = os.environ.get("LFAI_KEY")
 
+STATE_CHANGE_PROB = .01
+
+def dummy_transcribe(file_path):
+   t1 = time.time()
+   length = random.randint(20, 30)
+   res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+   t2 = time.time()
+   return res, t2-t1
+
+def dummy_inference(current_state):
+   t1 = time.time()
+   data = {}
+   seconds_to_next_event = random.randint(0, 120)
+   formatted_time_to_change = format_timediff(seconds_to_next_event)
+   if random.random() < STATE_CHANGE_PROB:
+      current_state = random.choice(list(CurrentState)).value
+   data['state'] = current_state
+   if current_state == 'Delay Start':
+      data['delay_reason'] = random.choice(list(DelayReason)).value
+      data['delay_resolution'] = formatted_time_to_change
+   data['seconds'] = time.time() - t1
+   return data  
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
    # Check if the file exists
@@ -147,6 +175,5 @@ def transcribe_audio(file_path):
       log.error(f"Error transcribing {file_path}: {response.status_code}")
       return "", 0
 
-
-def inference():
-   raise NotImplementedError
+def inference(transcription, current_state):
+   return dummy_inference(current_state)

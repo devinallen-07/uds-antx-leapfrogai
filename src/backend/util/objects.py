@@ -2,6 +2,8 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
 
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
 class CurrentState(Enum):
    pre_trial_start = "Pre Trial Start"
    trial_start = "Trial Start"
@@ -53,3 +55,51 @@ class Update(BaseModel):
 class LastUpdate(BaseModel):
    updateTime: str = Field(description = "YYYY-MM-DDTHH:MM:SS datetime format", examples=['2024-04-01T17:32:47'])
    lastState: State = Field(description="The current state")
+   runID: str = Field(description="the run_id of the run to show data for")
+
+class MetricTracker:
+   def __init__(self):
+      self.min_transcription = 9999999
+      self.min_infer = 9999999
+      self.max_transcription = 0
+      self.max_infer = 0
+      self.avg_transcription = 0
+      self.avg_infer = 0
+      self.num_tokens = 0
+      self.num_inferences = 0
+      self.total_transcribe_time = 0
+      self.total_infer_time = 0
+
+   def get_transcription_metrics(self):
+      data = {
+         "min" : self.min_transcription,
+         "max" : self.max_transcription,
+         "avg": self.avg_transcription
+      }
+      return data
+   
+   def get_inference_metrics(self):
+      data = {
+         "min" : self.min_infer,
+         "max" : self.max_infer,
+         "avg" : self.avg_infer
+      }
+      return data
+
+   def update_transcriptions(self, seconds, tokens):
+      self.num_tokens += tokens
+      self.total_transcribe_time += seconds
+      if seconds < self.min_transcription:
+         self.min_transcription = seconds
+      if seconds > self.max_transcription:
+         self.max_transcription = seconds
+      self.avg_transcription = self.total_transcribe_time / self.num_tokens
+
+   def update_inferences(self, seconds):
+      self.num_inferences += 1
+      self.total_infer_time += seconds
+      if seconds < self.min_infer:
+         self.min_infer = seconds
+      if seconds > self.max_infer:
+         self.max_infer = seconds
+      self.avg_infer = self.total_infer_time / self.num_inferences
