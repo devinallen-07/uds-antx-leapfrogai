@@ -3,8 +3,8 @@
 	import '../app.css';
 	import { DarkMode } from 'flowbite-svelte';
 </script>
+
 <Navbar />
 <slot>
-
 	<DarkMode />
 </slot>

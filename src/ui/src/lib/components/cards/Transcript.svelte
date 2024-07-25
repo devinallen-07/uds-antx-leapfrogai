@@ -11,9 +11,8 @@
 	});
 </script>
 
-<!-- <p class="text-center text-lg dark:text-white">Transcript</p> -->
-<div bind:this={contentContainer} class="mx-auto h-48 w-5/6 overflow-auto">
-	<ol class="custom-ol rounded-lg bg-gray-800 p-4 text-white">
+<div bind:this={contentContainer} class="mx-auto h-48 overflow-auto dark:[color-scheme:dark]">
+	<ol class="custom-ol rounded-lg p-4 text-white">
 		{#each list as item}
 			<li>
 				<div class="custom-li-content">{item}</div>
@@ -21,8 +20,6 @@
 		{/each}
 	</ol>
 </div>
-
-
 
 <style>
 	:global(.accordion-content) {
