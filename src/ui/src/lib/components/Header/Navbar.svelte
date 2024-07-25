@@ -4,7 +4,7 @@
   </script>
 
 <div class="flex justify-between">
-    <img src={doug} class="h-24 sm:h-32" alt="UDS" />
-    <img src={aiAntxfrom} class="h-24 sm:h-32" alt="UDS" />
+  <img src={doug} class="h-16 sm:h-24" alt="UDS" />
+  <img src={aiAntxfrom} class="h-16 sm:h-24" alt="UDS" />
 </div>
 
