@@ -99,16 +99,9 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
          transcriptions.append(transcription)
          times.append(time_taken)
 
-   # Calculate performance metrics
-   # total_tokens = sum(len(t.split()) for t in transcriptions)
-   time_per_token = [t / len(trans.split()) if trans else 0 for t, trans in zip(times, transcriptions)]
-   
+   # Calculate performance metrics  
    performance_metrics = {
-      "timeToTranscribePerToken": {
-         "min": min(time_per_token) if time_per_token else 0,
-         "max": max(time_per_token) if time_per_token else 0,
-         "avg": sum(time_per_token) / len(time_per_token) if time_per_token else 0
-      }
+      "timeToTranscribe": sum(times)     
    }
 
    result = {
