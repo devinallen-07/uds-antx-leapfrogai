@@ -1,3 +1,5 @@
 zarf-sbom
+*pycache*
+*.ipynb*
 data/*
 .DS_Store
