@@ -134,12 +134,14 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
          subprocess.run(command, shell=True, check=True)
          
          transcription, time_taken = transcribe_audio(chunk_path)
+         tokens += transcription.split(' ')
          transcriptions.append(transcription)
          times.append(time_taken)
 
    # Calculate performance metrics  
    performance_metrics = {
       "timeToTranscribe": sum(times),
+      "tokens": tokens
    }
 
    result = {
