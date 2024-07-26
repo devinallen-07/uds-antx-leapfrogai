@@ -4,8 +4,9 @@ import random
 import string
 import os
 from comms.valkey import get_output_frame, set_output_frame, set_json_data
-from comms.valkey import get_hash, set_hash, get_json_data
+from comms.valkey import get_json_data
 from comms.valkey import key_exists, wipe_key, publish_message
+from comms.s3 import WRITE_BUCKET, upload_file
 from util.logs import get_logger
 from util.objects import *
 
@@ -15,7 +16,7 @@ OUTPUT_COLUMNS = ['start', 'end', 'track1', 'track2',
                   'track3', 'track4', 'state', 'notes', 'delay type']
 VALKEY_COLUMNS = OUTPUT_COLUMNS + ['seconds_to_state_change']
 
-OUTPUT_STRING_FORMAT = "%-m/%d/Y %I:%M"
+OUTPUT_STRING_FORMAT = "%-m/%d/%Y %-H:%M"
 
 def format_timediff(seconds, hours=True):
    fmt_seconds = seconds % 60
@@ -66,15 +67,20 @@ def init_frame():
    df = pd.DataFrame([data])
    df['start'] = pd.to_datetime(df['start'])
    df['start'] = pd.to_datetime(df['start'])
-
    return df
+
+def get_current_state(valkeys):
+   df = get_output_frame(valkeys["output_frame"])
+   current_state = df.loc[df["state"] != "", "state"].values[-1]
+   delay_reason = df.loc[df["delay type"] != "", "delay type"].values[-1]
+   return current_state, delay_reason   
 
 def get_prefix():
    ts = pd.Timestamp("now")
    y = ts.year
    m = ts.month
    d = ts.day
-   prefix = f"Distribution-Statement-D/{y}/{m}/{d}/"
+   prefix = f"Distribution-Statement-D/{y}/{m:02d}/{d}/"
    return prefix
 
 #TODO: track this in valkey
@@ -87,7 +93,6 @@ def get_current_run_id():
 def init_run():
    run_id = get_run_id()
    prefix = get_prefix()
-   set_hash("run_to_prefix", run_id, prefix)
    wipe_data(prefix, run_id)
    keys = get_valkey_keys(prefix, run_id)
    init_outputs(keys)
@@ -111,6 +116,18 @@ def end_run():
       "run_id": run_id
    }
    publish_message("events", msg)
+
+def format_for_push(df: pd.DataFrame):
+   df['start'] = df['start'].dt.strftime(OUTPUT_STRING_FORMAT)
+   df['end'] = df['end'].dt.strftime(OUTPUT_STRING_FORMAT)
+   df["next_state"] = df['state'].shift(-1)
+   df.loc[df['state'] == df['next_state'], 'state'] = ""
+   df = df[OUTPUT_COLUMNS]
+   return df
+
+def push_logs(output_key):
+   df = get_output_frame(output_key)
+   df = format_for_push(df)
 
 def append_row(frame_key, data):
    row = pd.DataFrame([data])
@@ -152,7 +169,7 @@ def push_data(data, metrics, valkeys):
       append_row(valkeys['output_key'], push_data)
    push_metrics(metrics, valkeys["metrics_key"])
 
-def test_update(run_id, output_key, metrics_key):
+def test_update(output_key, metrics_key):
    start_time = pd.Timestamp('now')
    length = random.randint(10, 30)
    change_seconds = int(np.random.normal(120, 45, 1)[0])
@@ -160,7 +177,7 @@ def test_update(run_id, output_key, metrics_key):
       "start":start_time,
       "end": start_time,
       "track1": get_random_string(length),
-      "track2": get_random_string(length),
+      "track2": "",
       "track3": get_random_string(length),
       "track4": get_random_string(length),
       "state": random.choice(list(CurrentState)).value,
@@ -244,7 +261,6 @@ def api_update():
    prefix = get_prefix()
    run_id = get_current_run_id()
    valkeys = get_valkey_keys(prefix, run_id)
-   test_update(run_id, valkeys["output_key"], valkeys["metrics_key"])
    df = get_output_frame(valkeys["output_key"])
    metric_dict = get_json_data(valkeys["metrics_key"])
    metadata = create_metadata(df)

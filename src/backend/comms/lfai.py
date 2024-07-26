@@ -187,5 +187,5 @@ def transcribe_audio(file_path):
       log.error(f"Error transcribing {file_path}: {response.status_code}")
       return "", 0
 
-def inference(transcription, current_state):
+def inference(current_state):
    return dummy_inference(current_state)

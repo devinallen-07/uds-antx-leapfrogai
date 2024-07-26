@@ -9,7 +9,8 @@ from comms.valkey import get_json_data, set_json_data, publish_message
 from comms.s3 import get_objects, copy_from_s3
 from comms.lfai import dummy_transcribe, inference
 from util.logs import get_logger, setup_logging
-from util.loaders import init_outputs, push_data, get_valkey_keys
+from util.loaders import init_outputs, push_data, get_valkey_keys, test_update
+from util.loaders import push_logs, get_current_state
 from util.objects import MetricTracker, CurrentState
 from pathlib import Path
 
@@ -87,14 +88,16 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
    metrics = MetricTracker()
    current_state = CurrentState.pre_trial_start.value
    while num_no_updates < STALLED:
-      files_key = valkey_keys['files_key']
-      files = get_files_to_process(files_key, bucket, prefix)
+      current_state, delay_type = get_current_state(valkey_keys)
+      if current_state != CurrentState.delay_start.value:
+         delay_type = ""
+      files = get_files_to_process(valkey_keys['files_key'], bucket, prefix)
       if len(files) == 0:
          num_no_updates += 1
          time.sleep(20)
          continue
       num_no_updates = 0
-      processed_files = get_json_data(files_key)
+      processed_files = get_json_data(valkey_keys['files_key'])
       data = {}
       for key in files:
          start_time, end_time, track = get_audio_metadata(key)
@@ -104,18 +107,28 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
             data[start_time] = {
                "start_time":start_time,
                "end_time":end_time,
-               f"track{track}":txt
+               f"track{track}":txt,
+               "state": current_state,
+               "delay type": delay_type
             }
          else:
             to_append = data[start_time]
             to_append[f"track{track}"] = txt
             data[start_time] = to_append
          processed_files.append(key)
-         set_json_data(files_key, processed_files)
-      for k, v in data.items():
-         data[k] = inference(current_state, v)
+         set_json_data(valkey_keys['files_key'], processed_files)
+      for start_time, data_dict in data.items():
+         data[start_time] = inference(data_dict)
          metrics.update_inferences(v["inference_seconds"])
       push_data(data, metrics, valkey_keys)
+
+def test_loop(bucket, prefix, valkey_keys, data_dir):
+   iteration = 0
+   while True:
+      test_update(valkey_keys["output_key"], valkey_keys["metrics_key"])
+      iteration += 1
+      time.sleep(62)
+      push_logs(valkey_keys["output_key"])
 
 def cleanup(data_dir):
    if os.path.exists(data_dir):
