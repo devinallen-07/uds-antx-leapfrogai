@@ -1,14 +1,15 @@
 import pandas as pd
 from comms.s3 import upload_file, READ_BUCKET, get_objects, delete_key
 from util.logs import setup_logging, get_logger
-from util.loaders import get_prefix, get_valkey_keys, wipe_data
+from util.loaders import get_prefix, wipe_data
 import time
 from subprocess import Popen
+import argparse
 
 log = get_logger()
 
-def upload_dummy_data(prefix):
-   for i in range(6):
+def upload_dummy_data(prefix, iters):
+   for i in range(iters):
       for track in range(4):
          track += 1
          ts = pd.Timestamp('now')
@@ -38,8 +39,19 @@ def clear_s3():
 if __name__ == '__main__':
    setup_logging()
    prefix = get_prefix()
-   #wipe_data(prefix, 1)
-   #clear_s3()
-   #spawn_ingestion(prefix)
-   log.info("process spawned")
-   upload_dummy_data(prefix)
+   parser = argparse.ArgumentParser(description="testing arguments: mode can be setup, start_ingestion, start_upload")
+   parser.add_argument("mode")
+   args = parser.parse_args
+   mode = args.mode
+   log.info(f"Running testing with mode={mode}")
+   if mode == "setup":
+      wipe_data(prefix, 1)
+      clear_s3()
+      upload_dummy_data(prefix, 1)
+   elif mode == "start_ingestion":
+      wipe_data
+      spawn_ingestion(prefix)
+   elif mode == "start_upload":
+      upload_dummy_data()
+   else:
+      log.info(F"Could not parse mode: {mode}")
