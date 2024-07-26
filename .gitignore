@@ -7,3 +7,5 @@ data/*
 *.env
 *checkpoint.ipynb
 zarf-package-*.tar.zst
+build/*
+TODO.md

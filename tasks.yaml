@@ -1,9 +1,10 @@
 includes:
-  - create: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/create.yaml
-  - lint: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/lint.yaml
-  - pull: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/pull.yaml
-  - deploy: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/deploy.yaml
-  - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/setup.yaml
+  - create: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/create.yaml
+  - lint: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/lint.yaml
+  - pull: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/pull.yaml
+  - deploy: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/deploy.yaml
+  - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/setup.yaml
+  - ui: ./src/ui/tasks.yaml
 
 tasks:
   - name: default
@@ -15,3 +16,25 @@ tasks:
     description: Destroy the K3d cluster
     actions:
       - cmd: k3d cluster delete -a
+
+  - name: package
+    description: Package(zarf) the ANTX Application
+    actions:
+      - cmd: mkdir -p build
+      - task: package-ui
+
+  ### UI Tasks ###
+  - name: build-ui-image
+    description: Build the UI image
+    actions:
+      - cmd: docker build -t ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1 .
+        dir: src/ui
+
+  - name: package-ui
+    description: Package(zarf) the UI image
+    actions:
+      - task: build-ui-image
+      - task: create:package
+        with:
+          path: src/ui
+          options: -o build
