@@ -4,7 +4,6 @@ includes:
   - pull: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/pull.yaml
   - deploy: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/deploy.yaml
   - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/setup.yaml
-  - ui: ./src/ui/tasks.yaml
 
 tasks:
   - name: default
@@ -12,16 +11,35 @@ tasks:
     actions:
       - task: setup:k3d-test-cluster
 
+  - name: deploy-bundle
+    description: Deploy ANTX UDS Bundle
+    actions:
+      - task: deploy:test-bundle
+
   - name: destroy
     description: Destroy the K3d cluster
     actions:
       - cmd: k3d cluster delete -a
+
+  - name: create-bundle
+    description: Create the ANTX UDS Bundle
+    actions:
+      - task: package
+      - task: create:test-bundle
+        with:
+          path: bundle
+          options: -o build
 
   - name: package
     description: Package(zarf) the ANTX Application
     actions:
       - cmd: mkdir -p build
       - task: package-ui
+
+  - name: clean
+    description: take out the trash
+    actions:
+      - cmd: rm -rf build
 
   ### UI Tasks ###
   - name: build-ui-image
