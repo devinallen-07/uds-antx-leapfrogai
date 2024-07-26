@@ -108,7 +108,7 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
    log.info(f"Keys to process: {keys}")
    data = {}
    current_state, delay_type = get_current_state(valkey_keys)
-   if current_state != CurrentState.delay_start.value:
+   if not current_state.startswith("Delay"):
       delay_type = ""
    for key in keys:
       start_time, end_time, track = get_audio_metadata(key)
@@ -129,7 +129,6 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
          to_append[f"{track}"] = txt
          data[start_time] = to_append
       processed_files.append(key)
-   log.info(f'data:{data}')
    log.info(f"data:{data}")
    set_json_data(valkey_keys['files_key'], processed_files)
    return data

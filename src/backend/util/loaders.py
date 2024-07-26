@@ -126,18 +126,18 @@ def end_run():
 def format_for_push(df: pd.DataFrame):
    df['start'] = df['start'].dt.strftime(OUTPUT_STRING_FORMAT)
    df['end'] = df['end'].dt.strftime(OUTPUT_STRING_FORMAT)
-   df["next_state"] = df['state'].shift(-1)
+   df["next_state"] = df['state'].shift(1)
    df.loc[df['state'] == df['next_state'], 'state'] = ""
    df = df[OUTPUT_COLUMNS]
    return df
 
 def push_logs(output_key):
    df = get_output_frame(output_key)
-   start_date = df['start'].min().strftime("%-m_%-d_%Y")
+   start_date = df['start'].min().strftime("%Y-%-m-%-d")
    df = format_for_push(df)
    file_path = f"{LOG_DIR}{start_date}_all_tracks.csv"
    key = file_path.split("/")[-1]
-   log.debug(f'Saving output to {file_path} and s3://{WRITE_BUCKET}/{key}')
+   log.info(f'Saving output to {file_path} and s3://{WRITE_BUCKET}/{key}')
    df.to_csv(file_path, index=False)
    upload_file(file_path, file_path.split("/")[-1])
 

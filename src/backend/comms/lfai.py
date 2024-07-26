@@ -26,7 +26,7 @@ if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
 
-STATE_CHANGE_PROB = .01
+STATE_CHANGE_PROB = .2
 
 def dummy_transcribe(file_path):
    t1 = time.time()
@@ -54,7 +54,7 @@ def dummy_inference(data):
    if random.random() < STATE_CHANGE_PROB:
       current_state = random.choice(list(CurrentState)).value
    data['state'] = current_state
-   if current_state.startswith('Delay'):
+   if current_state.startswith('Delay') and data["delay_type"] != "":
       data['delay_type'] = random.choice(list(DelayReason)).value
       data['delay_resolution'] = formatted_time_to_change
    else:

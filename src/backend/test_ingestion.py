@@ -41,7 +41,7 @@ if __name__ == '__main__':
    prefix = get_prefix()
    parser = argparse.ArgumentParser(description="testing arguments: mode can be setup, start_ingestion, start_upload")
    parser.add_argument("mode")
-   args = parser.parse_args
+   args = parser.parse_args()
    mode = args.mode
    log.info(f"Running testing with mode={mode}")
    if mode == "setup":
@@ -52,6 +52,6 @@ if __name__ == '__main__':
       wipe_data
       spawn_ingestion(prefix)
    elif mode == "start_upload":
-      upload_dummy_data()
+      upload_dummy_data(prefix, 20)
    else:
       log.info(F"Could not parse mode: {mode}")
