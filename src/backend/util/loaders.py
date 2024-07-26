@@ -253,7 +253,7 @@ def get_transcriptions(df):
 
 def get_state(df):
    current_state = df['state'].values[-1]
-   if current_state == CurrentState.delay_start.value:
+   if current_state.startswith("Delay")
       delay_reason = df["delay type"].values[-1]
 
       delay_reason = DelayReason(delay_reason)

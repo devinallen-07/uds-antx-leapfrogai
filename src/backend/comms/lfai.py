@@ -9,6 +9,11 @@ import tempfile
 from util.logs import get_logger
 from util.objects import CurrentState, DelayReason
 from util.loaders import format_timediff, get_random_string
+from prompts.system_prompt_quotes_v3 import sys_prompt
+from enums.tracks import track_mapping
+from prompts.state_options import next_state_options
+from prompts.user_prompt_quotes_v3 import user, examples
+from typing import Any
 
 log = get_logger()
 
@@ -49,7 +54,7 @@ def dummy_inference(data):
    if random.random() < STATE_CHANGE_PROB:
       current_state = random.choice(list(CurrentState)).value
    data['state'] = current_state
-   if current_state == 'Delay Start':
+   if current_state.startswith('Delay'):
       data['delay_type'] = random.choice(list(DelayReason)).value
       data['delay_resolution'] = formatted_time_to_change
    else:
@@ -138,8 +143,8 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
          subprocess.run(command, shell=True, check=True)
          
          transcription, time_taken = transcribe_audio(chunk_path)
+         tokens += transcription.split(' ')
          transcriptions.append(transcription)
-         tokens += len(transcriptions.split(' '))
          times.append(time_taken)
 
    # Calculate performance metrics  
@@ -191,5 +196,103 @@ def transcribe_audio(file_path):
       log.error(f"Error transcribing {file_path}: {response.status_code}")
       return "", 0
 
-def inference(current_state):
-   return dummy_inference(current_state)
+def inference(data_dict):
+   return dummy_inference(data_dict)
+
+def parse_data_object(data_object: dict[str,Any]) -> str:
+    '''
+    Given a data object representing a single minute of radio tracks,
+    this function parses the tracks, maps the original track names to 
+    their functional names, and joins them with a double new-line break.
+    '''
+    tracks = [{k:v} for k,v in data_object.items() if k.startswith('track')]
+    mapped_tracks = []
+    for track in tracks:
+        for key, value in track.items():
+            mapped_tracks.append(f'{track_mapping[key]}: {value}')
+    return '\n\n'.join(mapped_tracks)
+
+def build_user_message(base_user_prompt: str,
+                       examples: str, 
+                       current_state: str, 
+                       radio_tracks: str, 
+                       next_state_options_dict: dict
+                       ) -> str:
+    '''
+    Builds user message string variable from dynamic string parameters.
+    '''
+    next_state_options = next_state_options_dict[current_state]
+    user_prompt = base_user_prompt.format(examples=examples, 
+                                          current_state=current_state, 
+                                          transmissions=radio_tracks, 
+                                          next_state_options=next_state_options
+                                          )
+    return user_prompt
+
+
+def _format_response(response: requests.models.Response) -> str:
+    '''
+    Reformats model response from json to a string
+    '''
+    json_response = response.json()
+    return json_response['choices'][0]['message']['content'].strip()
+
+def chat_completion(data_dict: dict,
+                    temperature: float=0.8,
+                    max_tokens: int=250,
+                    stream: bool=False,
+                    raw: bool=False
+                    ) -> str | dict:
+   current_state = data['state']
+   tracks = parse_data_object(data_dict)
+   user_prompt = build_user_message(user, 
+                                 examples, 
+                                 current_state, 
+                                 tracks, 
+                                 next_state_options)
+   url = os.environ['LEAPFROG_URL']
+   api_key = os.environ['LEAPFROG_API_KEY']
+   headers = {
+   'Authorization': f'Bearer {api_key}',
+   'Content-Type': 'application/json'
+   }
+   data = {
+      "model": "vllm",
+      "messages": [
+         {
+               "role": "system",
+               "content": sys_prompt
+         },
+         {
+               "role": "user",
+               "content": user_prompt,
+         }
+      ],
+      "stream": stream,
+      "temperature": temperature,
+      "max_tokens": max_tokens
+   }
+   try:
+      response = requests.post(url, headers=headers, data=json.dumps(data))
+      if response.status_code == 200:
+         if raw:
+               return response.json()
+         else: return _format_response(response)
+      else:
+         print('Response is not 200')
+         return response
+   except Exception as e:
+      print(e)
+   # I need the output of this function to be the data_dict with the following changes
+      #{
+         #start_time: datetime64[ns]
+         #end_time: datetime64[ns]
+         #track#: string of transcription for that track (multiple tracks)
+         #state: string of current state  ### UPDATE THIS
+         #delay_type: the type of delay   ### UPDATE THIS
+         ##### Appended fields ####
+         #time_to_change: string HH:MM until next state change
+         #inference_seconds: float - how long the inference took
+      #}
+
+   # I can write the function to change the output to this format but I will need an example output
