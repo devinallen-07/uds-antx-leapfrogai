@@ -15,6 +15,10 @@ spec:
       labels:
         app: ingestion
     spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
       containers:
       - name: ingestion
         imagePullPolicy: Always
@@ -53,6 +57,6 @@ spec:
           - name: S3_SECRET_KEY
             value: "###ZARF_VAR_S3_SECRET_KEY###"
           - name: LOG_DIR
-            value: /tmp/log/
+            value: /app/log/
           - name: DATA_DIR
-            value: /tmp/data/
+            value: /app/data/
