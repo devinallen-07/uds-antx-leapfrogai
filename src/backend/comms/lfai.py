@@ -1,6 +1,5 @@
 import requests
 import random
-import string
 import time
 import os
 import time as time
@@ -9,7 +8,7 @@ import subprocess
 import tempfile
 from util.logs import get_logger
 from util.objects import CurrentState, DelayReason
-from util.loaders import format_timediff
+from util.loaders import format_timediff, get_random_string
 
 log = get_logger()
 
@@ -17,7 +16,7 @@ URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptio
 URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
-LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY')
+LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', 'test')
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
@@ -27,7 +26,7 @@ STATE_CHANGE_PROB = .01
 def dummy_transcribe(file_path):
    t1 = time.time()
    length = random.randint(20, 30)
-   res = random.choices(string.ascii_uppercase + string.digits, k=length)
+   res = get_random_string(length)
    time.sleep(random.randint(4,7))
    t2 = time.time()
    result = {
@@ -43,12 +42,9 @@ def dummy_inference(current_state, data):
    t1 = time.time()
    seconds_to_next_event = random.randint(0, 120)
    formatted_time_to_change = format_timediff(seconds_to_next_event)
-   predicted_state = random.choice(list(CurrentState)).value
    if random.random() < STATE_CHANGE_PROB:
-      current_state = predicted_state
-      predicted_state = random.choice(list(CurrentState)).value
+      current_state = random.choice(list(CurrentState)).value
    data['state'] = current_state
-   data['predicted_state'] = predicted_state
    if current_state == 'Delay Start':
       data['delay_type'] = random.choice(list(DelayReason)).value
       data['delay_resolution'] = formatted_time_to_change
