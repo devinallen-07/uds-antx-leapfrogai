@@ -96,12 +96,13 @@ def parse_data_object(data_object: dict[str,Any]) -> str:
     this function parses the tracks, maps the original track names to 
     their functional names, and joins them with a double new-line break.
     '''
-    tracks = [{k:data_object[k]} for k in data_object if k.startswith('track')]
+    tracks = [{k:v} for k,v in data_object.items() if k.startswith('track')]
     mapped_tracks = []
     for track in tracks:
         for key, value in track.items():
             mapped_tracks.append(f'{track_mapping[key]}: {value}')
     return '\n\n'.join(mapped_tracks)
+
 
 def build_user_message(examples: str, 
                        current_state: str, 
