@@ -131,7 +131,7 @@ def format_for_push(df: pd.DataFrame):
    df = df[OUTPUT_COLUMNS]
    return df
 
-def push_logs(output_key, prefix):
+def push_logs(output_key):
    df = get_output_frame(output_key)
    start_date = df['start'].min().strftime("%-m_%-d_%Y")
    df = format_for_push(df)

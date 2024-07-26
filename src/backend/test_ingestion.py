@@ -8,7 +8,7 @@ from subprocess import Popen
 log = get_logger()
 
 def upload_dummy_data(prefix):
-   for i in range(2):
+   for i in range(6):
       for track in range(4):
          track += 1
          ts = pd.Timestamp('now')
@@ -38,8 +38,8 @@ def clear_s3():
 if __name__ == '__main__':
    setup_logging()
    prefix = get_prefix()
-   wipe_data(prefix, 1)
+   #wipe_data(prefix, 1)
    #clear_s3()
-   spawn_ingestion(prefix)
+   #spawn_ingestion(prefix)
    log.info("process spawned")
-   #upload_dummy_data(prefix)
+   upload_dummy_data(prefix)

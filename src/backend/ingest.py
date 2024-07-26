@@ -126,7 +126,7 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
          }
       else:
          to_append = data[start_time]
-         to_append[f"track{track}"] = txt
+         to_append[f"{track}"] = txt
          data[start_time] = to_append
       processed_files.append(key)
    log.info(f'data:{data}')
@@ -143,7 +143,8 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
          num_no_updates += 1
          log.info(f"No new S3 keys to be processed")
          time.sleep(20)
-         push_logs(valkey_keys["output_key"], prefix)
+         if num_no_updates == 1:
+            push_logs(valkey_keys["output_key"])
          continue
       num_no_updates = 0
       data = process_batch(files, valkey_keys,
