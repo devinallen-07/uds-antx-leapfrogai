@@ -1,0 +1,18 @@
+includes:
+  - create: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/create.yaml
+  - lint: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/lint.yaml
+  - pull: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/pull.yaml
+  - deploy: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/deploy.yaml
+  - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.8.0/tasks/setup.yaml
+
+tasks:
+  - name: build-image
+    description: Build the UI image
+    actions:
+      - cmd: docker build -t ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1 .
+
+  - name: package
+    description: Package(zarf) the UI image
+    actions:
+      - task: build-image
+      - task: create:package
