@@ -62,7 +62,7 @@ def get_audio_metadata(key):
    h,m,s = fname.split(" ")[-1].split("-")[0:3]
    s = s.split("_")[0]
    start_time = pd.Timestamp(f"{Y}/{M}/{D} {h}:{m}:{s}")
-   end_time = start_time + pd.Timedelta(seconds=68)
+   end_time = start_time + pd.Timedelta(seconds=67)
    return start_time, end_time, track
 
 def ingest_file(key: str,

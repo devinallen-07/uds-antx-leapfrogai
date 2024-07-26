@@ -38,7 +38,7 @@ def dummy_transcribe(file_path):
    }
    return json.dumps(result)
 
-def dummy_inference(current_state, data):
+def dummy_inference(data):
    t1 = time.time()
    seconds_to_next_event = random.randint(0, 120)
    formatted_time_to_change = format_timediff(seconds_to_next_event)

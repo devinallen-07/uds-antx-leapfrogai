@@ -153,18 +153,18 @@ def push_metrics(metrics: MetricTracker, metric_key: str):
    set_json_data(metric_key, data)
 
 def push_data(data, metrics, valkeys):
-   for k, v in data.items():
+   for start_time, data_dict in data.items():
       push_data = {
-         "start":v["start_time"],
-         "end":v["end_time"],
-         "track1": v.get("track1", ""),
-         "track2": v.get("track2", ""),
-         "track3": v.get("track3", ""),
-         "track4": v.get("track4", ""),
-         "state": v["state"],
+         "start":data_dict["start_time"],
+         "end":data_dict["end_time"],
+         "track1": data_dict.get("track1", ""),
+         "track2": data_dict.get("track2", ""),
+         "track3": data_dict.get("track3", ""),
+         "track4": data_dict.get("track4", ""),
+         "state": data_dict["state"],
          "notes": "",
-         "delay type": data.get("delay_type", ""),
-         "time_to_change": data["time_to_change"]
+         "delay type": data_dict.get("delay_type", ""),
+         "time_to_change": data_dict["time_to_change"]
       }
       append_row(valkeys['output_key'], push_data)
    push_metrics(metrics, valkeys["metrics_key"])
