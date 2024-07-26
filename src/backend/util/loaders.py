@@ -17,17 +17,19 @@ VALKEY_COLUMNS = OUTPUT_COLUMNS + ['seconds_to_state_change']
 
 OUTPUT_STRING_FORMAT = "%-m/%d/Y %I:%M"
 
-def format_timediff(seconds):
+def format_timediff(seconds, hours=True):
    fmt_seconds = seconds % 60
    minutes = seconds // 60
    fmt_minutes = minutes % 60
    hours = minutes // 60
-   return "{:02d}:{:02d}:{:02d}".format(hours,fmt_minutes,fmt_seconds)
+   dt_string = "{:02d}:{:02d}:{:02d}".format(hours,fmt_minutes,fmt_seconds)
+   if not hours:
+      dt_string = dt_string[3:]
+   return dt_string
 
 def get_random_string(length):
    chars = random.choices(string.ascii_uppercase + string.digits, k=length)
    chars = " ".join(chars)
-   log.info(chars)
    return chars
 
 def get_valkey_keys(prefix, run_id):
@@ -39,10 +41,12 @@ def get_valkey_keys(prefix, run_id):
 
 def wipe_data(key_prefix, run_id):
    keys = get_valkey_keys(key_prefix, run_id)
+   log.debug(f'Deleting keys: {keys}')
    for k, v in keys.items():
       wipe_key(v)
 
 def init_frame():
+   log.info(f'Initializing data frame')
    start_time = pd.Timestamp('now')
    end_time = start_time
    state = CurrentState.pre_trial_start.value
@@ -57,11 +61,12 @@ def init_frame():
       "state": state,
       "notes": "",
       "delay type": "",
-      "seconds_to_state_change": seconds_to_state_change
+      "time_to_change": format_timediff(seconds_to_state_change, hours=False)
    }
    df = pd.DataFrame([data])
    df['start'] = pd.to_datetime(df['start'])
    df['start'] = pd.to_datetime(df['start'])
+
    return df
 
 def get_prefix():
@@ -109,6 +114,8 @@ def end_run():
 
 def append_row(frame_key, data):
    row = pd.DataFrame([data])
+   row['start'] = pd.to_datetime(row['start'])
+   row['end'] = pd.to_datetime(row['end'])
    df = get_output_frame(frame_key)
    df = pd.concat([df, row], ignore_index=True)
    set_output_frame(frame_key, df)
@@ -158,11 +165,12 @@ def test_update(run_id, output_key, metrics_key):
       "track4": get_random_string(length),
       "state": random.choice(list(CurrentState)).value,
       "notes": "",
-      "delay_type": "",
-      "time_to_change": format_timediff(change_seconds)
+      "delay type": "",
+      "time_to_change": format_timediff(change_seconds, hours=False)
    }
-   if push_data["state"] == CurrentState.delay_start:
-      push_data["delay_type"] = random.choice(list(DelayReason)).value
+   if push_data["state"] == CurrentState.delay_start.value:
+      push_data["delay type"] = random.choice(list(DelayReason)).value
+      log.debug(f"Delay Start substate: {push_data['delay type']}")
    append_row(output_key, push_data)
    metrics = MetricTracker()
    data = np.random.normal(7,1,6)
@@ -216,8 +224,10 @@ def get_transcriptions(df):
 
 def get_state(df):
    current_state = df['state'].values[-1]
-   if current_state == CurrentState.delay_start:
-      delay_reason = df["delay_type"].values[-1]
+   if current_state == CurrentState.delay_start.value:
+      delay_reason = df["delay type"].values[-1]
+
+      delay_reason = DelayReason(delay_reason)
       resolution = df["time_to_change"].values[-1]
       dly = Delay(**{
          "reason": delay_reason,

@@ -62,5 +62,6 @@ components:
       - name: api
         files:
           - manifests/api.yaml
+          - manifests/listener.yaml
     images:
       - localhost:5000/backend:latest
