@@ -197,7 +197,7 @@ def test_update(output_key, metrics_key):
       "delay type": "",
       "time_to_change": format_timediff(change_seconds, hours=False)
    }
-   if push_data["state"] == CurrentState.delay_start.value:
+   if push_data["state"].startswith("Delay"):
       push_data["delay type"] = random.choice(list(DelayReason)).value
       log.debug(f"Delay Start substate: {push_data['delay type']}")
    append_row(output_key, push_data)
@@ -253,7 +253,7 @@ def get_transcriptions(df):
 
 def get_state(df):
    current_state = df['state'].values[-1]
-   if current_state.startswith("Delay")
+   if current_state.startswith("Delay"):
       delay_reason = df["delay type"].values[-1]
 
       delay_reason = DelayReason(delay_reason)
