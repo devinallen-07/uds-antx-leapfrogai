@@ -21,7 +21,7 @@ STALLED = 300
 
 def get_files_to_process(file_key, bucket, prefix=""):
    """Returns a list of files to process
-      :param file_key: key in valkey where the processed files are stored
+      :param file_key: key in valkey where the processed filtmp/data/es are stored
       :param bucket: Name of bucket to get objects from
       :param prefix: Checks for new files that begin with prefix
       :returns: List of file keys in s3
@@ -31,7 +31,7 @@ def get_files_to_process(file_key, bucket, prefix=""):
    to_process = []
    for filename in file_list:
       if filename not in processed_files and filename.endswith('.mp3'):
-         to_process.append(object['Key'])
+         to_process.append(filename)
    return to_process
 
 def send_sos(prefix, bucket,run_id, trc, restart):
@@ -53,9 +53,10 @@ def setup_ingestion(prefix):
       :param prefix: s3 prefix where the files are uploaded
       :returns: string path to the tmp folder
    """
-   data_dir = os.environ.get('DATA_DIR', '/tmp/data/')
+   data_dir = os.environ.get('DATA_DIR', './test/')
    data_dir += prefix.replace('/', '_')
    Path(data_dir).mkdir(parents=True, exist_ok=True)
+   log.info(f"{data_dir} created for audio files")
    return data_dir
 
 def get_audio_metadata(key):
@@ -77,50 +78,79 @@ def ingest_file(key: str,
       log.warning(f'Skipping key {key}: could not copy from s3')
       return False
    result = dummy_transcribe(new_path)
-   tokens = result['performanceMetrics']['tokens']
-   seconds = result['performanceMetrics']['timeToTranscribe']
-   txt = ' '.join(result['transcriptions'])
+   log.info(result)
+   perf = result["performanceMetrics"]
+   tokens = perf["tokens"]
+   seconds = perf['timeToTranscribe']
+   txt = ' '.join(result['transcription'])
    metrics.update_transcriptions(seconds, tokens)
    os.remove(new_path)
    return txt, metrics
 
+def process_batch(keys: list, valkey_keys:dict, bucket:str,
+                  metrics: MetricTracker, data_dir:str)->dict:
+   """Processes a batch of new S3 keys
+   :param keys: List of keys (strings)
+   :param valkey_keys: Dictionary of keys for interacting with valkey
+   :param bucket: S3 bucket name to pull from
+   :param metrics: MetricTracker for current run
+   :param data_dir: str path to the tmp directory to store audio files
+   :returns: Dicctionary with the following stucture:
+      {
+         start_time: datetime64[ns]
+         end_time: datetime64[ns]
+         track#: string of transcription for that track (multiple tracks)
+         state: string of current state
+         delay_type: the type of delay
+      }
+   """
+   processed_files = get_json_data(valkey_keys['files_key'])
+   log.info(f"Keys to process: {keys}")
+   data = {}
+   current_state, delay_type = get_current_state(valkey_keys)
+   if current_state != CurrentState.delay_start.value:
+      delay_type = ""
+   for key in keys:
+      start_time, end_time, track = get_audio_metadata(key)
+      log.info(f"{key} metadata: {start_time}, {end_time}, track{track}")
+      txt, metrics = ingest_file(key, data_dir,
+                           metrics, bucket)
+      log.debug(f"{track}:{txt}")
+      if start_time not in data:
+         data[start_time] = {
+            "start_time":start_time,
+            "end_time":end_time,
+            track:txt,
+            "state": current_state,
+            "delay type": delay_type
+         }
+      else:
+         to_append = data[start_time]
+         to_append[f"track{track}"] = txt
+         data[start_time] = to_append
+      processed_files.append(key)
+   log.info(f'data:{data}')
+   log.info(f"data:{data}")
+   set_json_data(valkey_keys['files_key'], processed_files)
+   return data
+
 def ingest_loop(bucket, prefix, valkey_keys, data_dir):
    num_no_updates = 0
    metrics = MetricTracker()
-   current_state = CurrentState.pre_trial_start.value
    while num_no_updates < STALLED:
-      current_state, delay_type = get_current_state(valkey_keys)
-      if current_state != CurrentState.delay_start.value:
-         delay_type = ""
       files = get_files_to_process(valkey_keys['files_key'], bucket, prefix)
       if len(files) == 0:
          num_no_updates += 1
+         log.info(f"No new S3 keys to be processed")
          time.sleep(20)
+         push_logs(valkey_keys["output_key"], prefix)
          continue
       num_no_updates = 0
-      processed_files = get_json_data(valkey_keys['files_key'])
-      data = {}
-      for key in files:
-         start_time, end_time, track = get_audio_metadata(key)
-         txt, metrics = ingest_file(key, data_dir,
-                              metrics, bucket)
-         if start_time not in data:
-            data[start_time] = {
-               "start_time":start_time,
-               "end_time":end_time,
-               f"track{track}":txt,
-               "state": current_state,
-               "delay type": delay_type
-            }
-         else:
-            to_append = data[start_time]
-            to_append[f"track{track}"] = txt
-            data[start_time] = to_append
-         processed_files.append(key)
-         set_json_data(valkey_keys['files_key'], processed_files)
+      data = process_batch(files, valkey_keys,
+                           bucket, metrics, data_dir)
       for start_time, data_dict in data.items():
          data[start_time] = inference(data_dict)
-         metrics.update_inferences(v["inference_seconds"])
+         metrics.update_inferences(data_dict["inference_seconds"])
       push_data(data, metrics, valkey_keys)
 
 def test_loop(bucket, prefix, valkey_keys, data_dir):
@@ -139,27 +169,28 @@ def ingest_data(bucket, prefix, run_id):
    #setup
    try:
       valkey_keys = get_valkey_keys(prefix, run_id)
-      #data_dir = setup_ingestion(prefix)
+      log.debug(f"valkey_keys: {valkey_keys}")
+      data_dir = setup_ingestion(prefix)
       init_outputs(valkey_keys)
    except Exception as e:
       log.warning(f'Error with ingestion setup: {e}')
       trc = traceback.format_exc()
-      #cleanup(data_dir)
+      cleanup(data_dir)
       send_sos(prefix, bucket, run_id, trc, False)
       sys.exit(1)
 
    #ingestion
    try:
-      test_loop(bucket, prefix, valkey_keys, "/tmp")
+      ingest_loop(bucket, prefix, valkey_keys, data_dir)
    except Exception as e:
       log.warning(f'Error with ingestion loop: {e}')
       trc = traceback.format_exc()
-      #cleanup(data_dir)
+      cleanup(data_dir)
       send_sos(prefix, bucket, run_id, trc, False)
       sys.exit(1)
 
    log.info(f'Ingestion stalled due to {STALLED} updates with no new files')
-   #cleanup(data_dir)
+   cleanup(data_dir)
    send_sos(prefix, bucket, run_id, "", False)
 
 if __name__ == '__main__':

@@ -26,8 +26,11 @@ STATE_CHANGE_PROB = .01
 def dummy_transcribe(file_path):
    t1 = time.time()
    length = random.randint(20, 30)
-   res = get_random_string(length)
-   time.sleep(random.randint(4,7))
+   trans = []
+   for i in range (4):
+      res = get_random_string(length)
+      #time.sleep(random.randint(4,7))
+      trans.append(res)
    t2 = time.time()
    result = {
       "transcription": res,
@@ -36,12 +39,13 @@ def dummy_transcribe(file_path):
          "tokens": random.randint(10,20)
       }
    }
-   return json.dumps(result)
+   return result
 
 def dummy_inference(data):
    t1 = time.time()
    seconds_to_next_event = random.randint(0, 120)
    formatted_time_to_change = format_timediff(seconds_to_next_event)
+   current_state = data['state']
    if random.random() < STATE_CHANGE_PROB:
       current_state = random.choice(list(CurrentState)).value
    data['state'] = current_state
@@ -51,7 +55,7 @@ def dummy_inference(data):
    else:
       data["delay_type"] = ""
    data["time_to_change"] = formatted_time_to_change
-   time.sleep(random.randint(1, 5))
+   #time.sleep(random.randint(1, 5))
    data['inference_seconds'] = time.time() - t1
    return data  
 
@@ -150,7 +154,7 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
    }
 
    if response_type == 'json':
-      return json.dumps(result)
+      return result
    else:
       return ' '.join(transcriptions)
 

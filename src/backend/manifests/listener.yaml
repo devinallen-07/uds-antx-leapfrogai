@@ -53,4 +53,6 @@ spec:
           - name: S3_SECRET_KEY
             value: "###ZARF_VAR_S3_SECRET_KEY###"
           - name: LOG_DIR
-            value: /tmp/log
+            value: /tmp/log/
+          - name: DATA_DIR
+            value: /tmp/data/

@@ -72,9 +72,13 @@ def init_frame():
    return df
 
 def get_current_state(valkeys):
-   df = get_output_frame(valkeys["output_frame"])
+   df = get_output_frame(valkeys["output_key"])
    current_state = df.loc[df["state"] != "", "state"].values[-1]
-   delay_reason = df.loc[df["delay type"] != "", "delay type"].values[-1]
+   delay_reason = df.loc[df["delay type"] != "", "delay type"]
+   if delay_reason.empty:
+      delay_reason = ""
+   else:
+      delay_reason = delay_reason.values[-1]
    return current_state, delay_reason   
 
 def get_prefix():
@@ -82,7 +86,7 @@ def get_prefix():
    y = ts.year
    m = ts.month
    d = ts.day
-   prefix = f"Distribution-Statement-D/{y}/{m:02d}/{d}/"
+   prefix = f"Distribution-Statement-D/{y}/{m:02d}/{d:02d}/"
    return prefix
 
 #TODO: track this in valkey
