@@ -34,16 +34,18 @@ def get_files_to_process(file_key, bucket, prefix=""):
          to_process.append(object['Key'])
    return to_process
 
-def send_sos(prefix, bucket, trc, restart):
+def send_sos(prefix, bucket,run_id, trc, restart):
    """Sends a message before the process dies
       :param prefix: process key
       :param bucket: S3 bucket where ingestion files are
+      :param run_id: Current run_id
       :param trc: Traceback (if available)
       :param restart: Whether to restart the process
       :returns: None
    """
    data = {'message_type':'error', 'prefix':prefix,
-           'bucket':bucket, 'traceback': trc, 'restart': restart}
+           'bucket':bucket, 'run_id': run_id,
+           'traceback': trc, 'restart': restart}
    publish_message(MESSAGE_CHANNEL, data)
 
 def setup_ingestion(prefix):
@@ -66,7 +68,6 @@ def get_audio_metadata(key):
    return start_time, end_time, track
 
 def ingest_file(key: str,
-                valkey_keys: dict,
                 data_dir: str,
                 metrics: MetricTracker,
                 bucket: str):
@@ -101,7 +102,7 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
       data = {}
       for key in files:
          start_time, end_time, track = get_audio_metadata(key)
-         txt, metrics = ingest_file(key, valkey_keys, data_dir,
+         txt, metrics = ingest_file(key, data_dir,
                               metrics, bucket)
          if start_time not in data:
             data[start_time] = {
@@ -127,8 +128,8 @@ def test_loop(bucket, prefix, valkey_keys, data_dir):
    while True:
       test_update(valkey_keys["output_key"], valkey_keys["metrics_key"])
       iteration += 1
+      push_logs(valkey_keys["output_key"], prefix)
       time.sleep(62)
-      push_logs(valkey_keys["output_key"])
 
 def cleanup(data_dir):
    if os.path.exists(data_dir):
@@ -138,28 +139,28 @@ def ingest_data(bucket, prefix, run_id):
    #setup
    try:
       valkey_keys = get_valkey_keys(prefix, run_id)
-      data_dir = setup_ingestion(prefix)
-      init_outputs(valkey_keys, prefix)
+      #data_dir = setup_ingestion(prefix)
+      init_outputs(valkey_keys)
    except Exception as e:
       log.warning(f'Error with ingestion setup: {e}')
       trc = traceback.format_exc()
-      cleanup(data_dir)
-      send_sos(prefix, bucket, trc, False)
+      #cleanup(data_dir)
+      send_sos(prefix, bucket, run_id, trc, False)
       sys.exit(1)
 
    #ingestion
    try:
-      ingest_loop(bucket, prefix, run_id, valkey_keys, data_dir)
+      test_loop(bucket, prefix, valkey_keys, "/tmp")
    except Exception as e:
       log.warning(f'Error with ingestion loop: {e}')
       trc = traceback.format_exc()
-      cleanup(data_dir)
-      send_sos(prefix, bucket, trc, True)
+      #cleanup(data_dir)
+      send_sos(prefix, bucket, run_id, trc, False)
       sys.exit(1)
 
    log.info(f'Ingestion stalled due to {STALLED} updates with no new files')
-   cleanup(data_dir)
-   send_sos(prefix, bucket, "", False)
+   #cleanup(data_dir)
+   send_sos(prefix, bucket, run_id, "", False)
 
 if __name__ == '__main__':
    setup_logging()
@@ -169,4 +170,4 @@ if __name__ == '__main__':
    parser.add_argument('run_id', help="run_id to help keep data stored separately")
    args = parser.parse_args()
    log.info(f"Spawned ingestion with args: {args}")
-   #ingest_data(args.bucket, args.prefix, args.test)
+   ingest_data(args.bucket, args.prefix, args.run_id)
