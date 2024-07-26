@@ -13,9 +13,9 @@ def create_valkey_connection():
    """Creates a connection to valkey using environment variables
       :returns: redis.Redis object
    """
-   host = os.environ.get('REDIS_HOST')
-   pwd = os.environ.get('REDIS_PASSSWORD', 'test-password')
-   port = os.environ.get('REDIS_PORT', '6379')
+   host = os.environ.get('VALKEY_HOST', "localhost")
+   pwd = os.environ.get('VALKEY_PASSSWORD', 'test-password')
+   port = os.environ.get('VALKEY_PORT', '6379')
    r = redis.Redis(host=host, port=port, password=pwd)
    VALKEY_ENGINE = r
    return r
@@ -34,12 +34,37 @@ def get_valkey_connection():
          return create_valkey_connection()
       return VALKEY_ENGINE
    
+def key_exists(key: str):
+   r = get_valkey_connection()
+   return r.exists(key)
+   
+def wipe_key(key: str):
+   r = get_valkey_connection()
+   if r.exists(key):
+      r.delete(key)
+
+def publish_message(channel: str, data: dict):
+   """Publishes a dictionary as a valkey message
+      :param channel: string to publish dictionary to
+      :param data: dictionary to publish as message
+      :returns: None
+   """
+   r = get_valkey_connection()
+   r.publish(channel, json.dumps(data))
+   
 def get_output_frame(key):
    """Retrieves the output Pandas.DataFrame from key
       :param key: Key in valkey for the DataFrame
+      :returns: pandas.DataFrame
    """
    r = get_valkey_connection()
-   df = pd.read_json(StringIO(r.get(key).decode('utf-8')))
+   data = r.get(key)
+   if data is None:
+      log.warn(f'{key} does not exist in valkey')
+      return None
+   df = pd.read_json(StringIO(data.decode('utf-8')))
+   df['start'] = pd.to_datetime(df['start'])
+   df['end'] = pd.to_datetime(df['end'])
    return df
 
 def set_output_frame(key, df):
@@ -51,21 +76,37 @@ def set_output_frame(key, df):
    r = get_valkey_connection()
    r.set(key, df.to_json())
 
+def get_hash(channel, hash):
+   r = get_valkey_connection()
+   data = r.hget(channel, hash)
+   if data is None:
+      log.warn(f'{hash} does not exist in {channel}')
+      return None
+   result = json.loads(data)
+   return result
 
-def get_processed_files(key):
-   """Restores a list of files processed in the current exercise
-      :param key: Key where the list of files is stored in valkey
-      :returns: list of string (object keys) in s3
+def set_hash(channel, hash, value):
+   r = get_valkey_connection()
+   r.hset(channel, hash, value)
+
+def get_json_data(key):
+   """Gets json data stored in key
+      :param key: Key where the data is stored in valkey
+      :returns: list or dict of json data
    """
    r = get_valkey_connection()
-   files = list(json.loads(r.get(key)))
-   return files
+   data = r.get(key)
+   if data is None:
+      log.warn(f'{key} does not exist in valkey')
+      return []
+   dict_data = json.loads(data)
+   return dict_data
 
-def set_processed_files(key, files):
-   """Stores a list of processed file keys @ key in valkey
+def set_json_data(key, data):
+   """Stores json data in key
       :param key: key in valkey to store the list
-      :param files: list of s3 object keys that have been processed
+      :param data: data that can be jsonified into valkey
       :returns: None
    """
    r = get_valkey_connection()
-   r.set(key, json.dumps(files))
+   r.set(key, json.dumps(data))
