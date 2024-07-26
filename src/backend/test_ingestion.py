@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import os
 from comms.s3 import upload_file, READ_BUCKET, get_objects, delete_key
 from util.logs import setup_logging, get_logger
 from util.loaders import get_prefix, wipe_data
@@ -10,8 +12,13 @@ log = get_logger()
 
 def upload_dummy_data(prefix, iters):
    for i in range(iters):
+      choices = os.listdir("./test/audio/")
+      choices = np.random.choice(choices, 4)
       for track in range(4):
+         file_path = f"./test/audio/{choices[track]}"
          track += 1
+         if track == 2:
+            continue
          ts = pd.Timestamp('now')
          y = ts.year
          m = ts.month
@@ -20,7 +27,7 @@ def upload_dummy_data(prefix, iters):
          min = ts.minute
          sec = ts.second
          key = f"{prefix}track{track}/{y}-{m:02d}-{d:02d} {h:02d}-{min:02d}-{sec:02d}_track{track}.mp3"
-         upload_file("test/test_data.txt", key, READ_BUCKET)
+         upload_file(file_path, key, READ_BUCKET)
       time.sleep(67)
 
 def spawn_ingestion(prefix):

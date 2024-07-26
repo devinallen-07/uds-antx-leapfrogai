@@ -7,11 +7,11 @@ import argparse
 import pandas as pd
 from comms.valkey import get_json_data, set_json_data, publish_message
 from comms.s3 import get_objects, copy_from_s3
-from comms.lfai import dummy_transcribe, inference
+from comms.lfai import build_transcribe_request, chat_completion
 from util.logs import get_logger, setup_logging
 from util.loaders import init_outputs, push_data, get_valkey_keys, test_update
 from util.loaders import push_logs, get_current_state
-from util.objects import MetricTracker, CurrentState
+from util.objects import MetricTracker
 from pathlib import Path
 
 log = get_logger()
@@ -77,7 +77,7 @@ def ingest_file(key: str,
    if not success:
       log.warning(f'Skipping key {key}: could not copy from s3')
       return False
-   result = dummy_transcribe(new_path)
+   result = build_transcribe_request(new_path)
    log.info(result)
    perf = result["performanceMetrics"]
    tokens = perf["tokens"]
@@ -149,7 +149,7 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
       data = process_batch(files, valkey_keys,
                            bucket, metrics, data_dir)
       for start_time, data_dict in data.items():
-         data[start_time] = inference(data_dict)
+         data[start_time] = chat_completion(data_dict)
          metrics.update_inferences(data_dict["inference_seconds"])
       push_data(data, metrics, valkey_keys)
 

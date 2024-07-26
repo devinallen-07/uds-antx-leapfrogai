@@ -6,6 +6,8 @@ import time as time
 import json
 import subprocess
 import tempfile
+import re
+import traceback
 from util.logs import get_logger
 from util.objects import CurrentState, DelayReason
 from util.loaders import format_timediff, get_random_string
@@ -17,11 +19,11 @@ from typing import Any
 
 log = get_logger()
 
-URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
-URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
+URL_TRANSCRIPTION = 'https://leapfrogai-api.burning.boats/openai/v1/audio/transcriptions'#'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
+URL_INFERENCE = 'https://leapfrogai-api.burning.boats/openai/v1/chat/completions'#'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
-LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', 'test')
+LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
@@ -143,7 +145,7 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
          subprocess.run(command, shell=True, check=True)
          
          transcription, time_taken = transcribe_audio(chunk_path)
-         tokens += transcription.split(' ')
+         tokens += len(transcription.split(' '))
          transcriptions.append(transcription)
          times.append(time_taken)
 
@@ -194,6 +196,7 @@ def transcribe_audio(file_path):
       return transcription, time_taken
    else:
       log.error(f"Error transcribing {file_path}: {response.status_code}")
+      log.error(f"{response.json()}")
       return "", 0
 
 def inference(data_dict):
@@ -230,12 +233,25 @@ def build_user_message(base_user_prompt: str,
     return user_prompt
 
 
-def _format_response(response: requests.models.Response) -> str:
-    '''
-    Reformats model response from json to a string
-    '''
-    json_response = response.json()
-    return json_response['choices'][0]['message']['content'].strip()
+def _format_response(response: requests.models.Response,
+                     data_dict: dict) -> str:
+   '''
+   Reformats model response from json to a string
+   '''
+   json_response = response.json()
+   state_response = json_response['choices'][0]['message']['content'].strip()
+   state_response = json.loads(re.sub("</s>", '', state_response))
+   log.info(state_response)
+   if "predicted_state" in state_response:
+      data_dict["state"] = state_response["predicted_state"]
+   if data_dict["state"].startswith("Delay"):
+      if "delay_type" in state_response:
+         data_dict["delay_type"] = state_response["delay_type"]
+      else:
+         data_dict["delay_type"] = random.choice(list(DelayReason)).value
+   return data_dict
+
+
 
 def chat_completion(data_dict: dict,
                     temperature: float=0.8,
@@ -243,17 +259,15 @@ def chat_completion(data_dict: dict,
                     stream: bool=False,
                     raw: bool=False
                     ) -> str | dict:
-   current_state = data['state']
+   current_state = data_dict['state']
    tracks = parse_data_object(data_dict)
    user_prompt = build_user_message(user, 
                                  examples, 
                                  current_state, 
                                  tracks, 
                                  next_state_options)
-   url = os.environ['LEAPFROG_URL']
-   api_key = os.environ['LEAPFROG_API_KEY']
    headers = {
-   'Authorization': f'Bearer {api_key}',
+   'Authorization': f'Bearer {LEAPFROG_API_KEY}',
    'Content-Type': 'application/json'
    }
    data = {
@@ -273,16 +287,18 @@ def chat_completion(data_dict: dict,
       "max_tokens": max_tokens
    }
    try:
-      response = requests.post(url, headers=headers, data=json.dumps(data))
+      response = requests.post(URL_INFERENCE, headers=headers, data=json.dumps(data))
       if response.status_code == 200:
          if raw:
                return response.json()
-         else: return _format_response(response)
+         else: return _format_response(response, data_dict)
       else:
          print('Response is not 200')
          return response
    except Exception as e:
-      print(e)
+      print(traceback.format_exc())
+
+
    # I need the output of this function to be the data_dict with the following changes
       #{
          #start_time: datetime64[ns]

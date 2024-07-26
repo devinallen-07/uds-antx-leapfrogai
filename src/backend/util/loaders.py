@@ -52,7 +52,7 @@ def init_frame():
    log.info(f'Initializing data frame')
    start_time = pd.Timestamp('now')
    end_time = start_time
-   state = CurrentState.pre_trial_start.value
+   state = CurrentState.trial_start.value
    seconds_to_state_change = 75
    data = {
       "start":start_time,
