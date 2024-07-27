@@ -1,0 +1,19 @@
+kind: ZarfPackageConfig
+metadata:
+  name: "ai-antx-ui"
+  description: "UI for AI Antx"
+  version: "0.0.1"
+
+components:
+  - name: ui
+    required: true
+    manifests:
+      - name: ui
+        namespace: antx
+        files:
+          - manifests/uds-package.yaml
+          - manifests/namespace.yaml
+          - manifests/service.yaml
+          - manifests/deployment.yaml
+    images:
+      - ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1

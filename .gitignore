@@ -3,4 +3,9 @@ zarf-sbom
 *.ipynb*
 data/*
 .DS_Store
+*.pyc
 *.env
+*checkpoint.ipynb
+zarf-package-*.tar.zst
+build/*
+TODO.md

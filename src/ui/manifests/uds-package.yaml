@@ -1,0 +1,14 @@
+apiVersion: uds.dev/v1alpha1
+kind: Package
+metadata:
+  name: antx
+  namespace: antx
+spec:
+  network:
+    expose:
+      - service: ui
+        selector:
+          app: ui
+        host: antx # antx.uds.dev
+        gateway: tenant
+        port: 3000

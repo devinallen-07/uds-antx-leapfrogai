@@ -62,3 +62,38 @@ graph LR
 ## Deployment of UDS ANTX Solution
 
 See [Deployments](docs/deployments.md)
+
+## Helpful hints for UDS and LFAI deployments
+
+### Building from scratch on WSL2 w/o Docker Desktop
+```
+git clone git@github.com:defenseunicorns/leapfrogai.git
+cd leapfrogai
+git checkout kp-wsl2-deployment
+make build-k3d-gpu
+make create-uds-gpu-cluster
+make build-gpu LOCAL_VERSION=dev
+cd uds-bundles/latest/gpu
+uds create .
+uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
+```
+
+- If `supabase-auth` fails to deploy correctly, suggest restarting `pepr-uds-core-watcher` as there is a race condition that is in the queue to fix
+
+### Deploy whisper-distil
+(note this is a prebuild zarf package with different configurations than base whisper)
+
+`uds zarf package deploy distil-large-v2-zarf-package-whisper-amd64-dev.tar.zst`
+
+
+### Deploy metrics
+`uds zarf tools kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml`
+
+### Tearing down cluster
+```
+k3d cluster delete uds  # kills a running uds cluster
+uds zarf tools clear-cache # clears the Zarf tool cache
+rm -rf ~/.uds-cache # clears the UDS cache
+docker system prune -a -f # removes all hanging containers and images
+docker volume prune -f # removes all hanging container volumes
+```
