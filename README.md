@@ -67,7 +67,7 @@ See [Deployments](docs/deployments.md)
 
 ### Building from scratch on WSL2 w/o Docker Desktop
 ```
-git@github.com:defenseunicorns/leapfrogai.git
+git clone git@github.com:defenseunicorns/leapfrogai.git
 cd leapfrogai
 git checkout kp-wsl2-deployment
 make build-k3d-gpu
