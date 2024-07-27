@@ -19,8 +19,8 @@ from typing import Any
 
 log = get_logger()
 
-URL_TRANSCRIPTION = 'https://leapfrogai-api.burning.boats/openai/v1/audio/transcriptions'#'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
-URL_INFERENCE = 'https://leapfrogai-api.burning.boats/openai/v1/chat/completions'#'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
+URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
+URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
@@ -300,8 +300,8 @@ def chat_completion(data_dict: dict,
          else: return _format_response(response, data_dict)
       else:
          log.warning('Inference Response is not 200')
-         log.warning(f"{resonse.json()}")
-         data_dict["inference_seconds"} = 0
+         log.warning(f"{response.json()}")
+         data_dict["inference_seconds"] = 0
          data_dict["time_to_change"] = ""
          return data_dict
    except Exception as e:
