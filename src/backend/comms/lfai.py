@@ -19,8 +19,8 @@ from typing import Any
 
 log = get_logger()
 
-URL_TRANSCRIPTION = 'https://leapfrogai-api.burning.boats/openai/v1/audio/transcriptions'#'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
-URL_INFERENCE = 'https://leapfrogai-api.burning.boats/openai/v1/chat/completions'#'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
+URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
+URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)

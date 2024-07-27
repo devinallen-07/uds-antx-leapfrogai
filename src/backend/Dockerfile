@@ -9,7 +9,7 @@ RUN mkdir /app/comms \
 RUN mkdir /app/data \
    && mkdir /app/log
 
-COPY *.py .
+COPY *.py ./
 COPY ./comms/*.py ./comms/
 COPY ./util/*.py ./util/
 COPY ./enums/*.py ./enums/
