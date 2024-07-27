@@ -169,10 +169,10 @@ def transcribe_audio(file_path):
       data = {
          'model': 'whisper',
          'file': f'@{file_path}',
-         'language': '',
-         'prompt': '',
+         'language': 'en',
+         'prompt': 'You are a navy radio operator whose job is to listen to the radio and transcribe what is being said. Ignore static and silence. Return only human voices.',
          'response_format': '',
-         'temperature': '1'
+         'temperature': '0'
       }
 
       start_time = time.time()
