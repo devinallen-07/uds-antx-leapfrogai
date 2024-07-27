@@ -163,6 +163,21 @@ def push_metrics(metrics: MetricTracker, metric_key: str):
    }
    set_json_data(metric_key, data)
 
+def setup_metrics(metric_key):
+   data = {
+      "transcription": {
+         "min": 0,
+         "max": 0,
+         "avg": 0
+      },
+      "inference": {
+         "min": 0,
+         "max": 0,
+         "avg": 0
+      }
+   }
+   set_json_data(metric_key, data)
+
 def push_data(data, metrics, valkeys):
    for start_time, data_dict in data.items():
       push_data = {
@@ -213,11 +228,14 @@ def test_update(output_key, metrics_key):
 def init_outputs(valkey_keys):
    files_key = valkey_keys['files_key']
    output_key = valkey_keys['output_key']
+   metrics_key = valkey_keys['metrics_key']
    if not key_exists(files_key):
       set_json_data(files_key, [])
    if not key_exists(output_key):
       df = init_frame()
       set_output_frame(output_key, df)
+   if not key_exists(metrics_key):
+      setup_metrics(metrics_key)
 
 def create_metrics(metrics):
    data = {
