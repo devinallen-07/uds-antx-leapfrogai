@@ -1,16 +1,19 @@
+import sys
+sys.path.append('../')
 from backend.enums.states import States 
 from backend.enums.delay_types import DelayTypes
 
-trial_start = States.TRIAL_START.value 
-trial_end = States.TRIAL_END.value
-delay_start = States.DELAY_START.value
-delay_end = States.DELAY_END.value 
-mistrial = States.MISTRIAL.value 
-rtb = States.RTB.value
-next_state_header = "Next State Options -->"
+(   trial_start,
+    trial_end, 
+    delay_start,
+    delay_end,
+    mistrial,
+    rtb
+) = [k.value for k in States]
 vendor, npc, software, towing = [k.value for k in DelayTypes]
+next_state_header = "Next State Options -->"
 
-delay_sub_states = f'''
+delay_definitions = f'''
 \t- {vendor}: Vendor issues causing delay in trial execution. 
 \t- {npc}: Unauthorized craft enters Operating Area.
 \t- {software}: Boat experiences network drops or software crashes.
@@ -27,10 +30,9 @@ of each component are provided below:\n
 
 1. A "Current State" from among the following State Options: {[e.value for e in States]}
     Current State definitions are as follows:\n
-    - {trial_start}:  Formal initiation of trial phase and evaluation and testing of UAV. This begins the Trial Window.
-    - {trial_end}: Conclusion of testing and evaluation of UAV after all tests performed and at the discretion of the Test Director. This closes the trial Window.
-    - {delay_start}:  A conditional state that prevents testing and evaluation while within a Trial Window due to one or more of the following factors. This begins a Delay Period.  These factors can be categorized as follows:\n
-    {delay_sub_states}
+    - {trial_start}:  Formal initiation of trial phase and evaluation and testing of UAV. This state opens the Trial Window.
+    - {trial_end}: Conclusion of testing and evaluation of UAV after all tests performed and at the discretion of the Test Director. This state closes the trial Window.
+    - {delay_start}:  A conditional state that prevents testing and evaluation while within a Trial Window due to one or more of the following factors. This begins a Delay Period.
     - {delay_end}: All conditional states that prevent testing and evaluation have ended while within the Trial Window. This closes a Delay Period. 
     - {mistrial}: This state can only occur after trial has started, but has abruptly ended for any given number of reasons.  There will be no Trial End state after a Mistrial. 
     - {rtb}: Return to base (RTB), all trials have ended and boats are in transit to their base of operations. 
@@ -39,19 +41,14 @@ of each component are provided below:\n
     - Decide if the "Current State" should change, given the content/meaning of the text transmission.
     - If the "Current State" should change, then predict the next state based on the content/meaning of the text transmission. \
 You will be provided with a list of potential next state options given the Current State. 
+    - If you predict a state change to "{delay_start}" then also determine a Delay Type from among the following choices:\n
+    {delay_definitions}
 
 Output Format: Return your response as a json object in the following format:\n
     - If you determine that no change in state is warranted simply return the current state as json as follows:
         {{"current_state": "<current state>"}}
     - If a change in state is warranted based on the meaning/content of the associated text then return the following:
         {{"predicted_state": "<predicted state>", "reasoning": "<your reasoning for next state prediction>"}}
-'''
-
-# prediction_rules = f'''
-# - Prediction Rules: Predicted states must adhere to the following structured options:
-# {trial_start}:\t {next_state_header} {state_options[trial_start]['Options']}
-# {trial_end}:\t {next_state_header} {state_options[trial_end]['Options']}
-# {delay_start}:\t {next_state_header} {state_options[delay_start]['Options']}
-# {delay_end}:\t {next_state_header} {state_options[delay_end]['Options']}
-# {mistrial}:\t {next_state_header} {state_options[mistrial]['Options']}
-# '''
+    - If predicted state is of type "{delay_start}" then return a Delay Type as well from among the following options: {[k.value for k in DelayTypes]}:
+        {{"predicted_state": "Delay Start", "reasoning": "<your reasoning for predicted a Delay Start>", "delay_type": "<delay type>"}}
+''' 

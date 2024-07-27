@@ -1,7 +1,7 @@
 from backend.enums.states import States 
-from backend.enums.tracks import Tracks, track_mapping
+from backend.enums.tracks import Tracks
+from backend.enums.delay_types import DelayTypes
 from backend.prompts.state_options import next_state_options
-from typing import Any
 
 trial_start = States.TRIAL_START.value 
 trial_end = States.TRIAL_END.value
@@ -9,6 +9,8 @@ delay_start = States.DELAY_START.value
 delay_end = States.DELAY_END.value 
 mistrial = States.MISTRIAL.value 
 rtb = States.RTB.value
+vendor, npc, software, towing = [k.value for k in DelayTypes]
+
 
 examples = f'''
 EXAMPLE 1: No change in state
@@ -31,7 +33,7 @@ Radio Transmissions -
 - {Tracks.track4.value}: "I'm just going to confirm we're still at 10 knots. Still 10 knots. So we're almost there. What? Basically perpendicular along the box. So roughly 1, 3, 0 for all of us. I'm just going to set this to one. If anything, you start to angle out of the box a little bit, just change a little bit. So definitely stay within it.
 ----------------------
 Potential next state options: {next_state_options[trial_start]['Options']}
-Output: {{"predicted_state": "{delay_start}", "reason": "A fishing vessel is close to the trial area and could be a hazard to safe operations"}}
+Output: {{"predicted_state": "{delay_start}", "reason": "A fishing vessel is close to the trial area and could be a hazard to safe operations", "delay_type": "{npc}"}}
 
 EXAMPLE 3: No change in state
 Current State:\t{delay_start}
@@ -64,7 +66,7 @@ Radio Transmissions -
 - {Tracks.track4.value}: "Hold up now, I'm seeing several marine animals in your vicinity."
 ----------------------
 Potential next state options: {next_state_options[trial_start]['Options']}
-Output: {{"predicted_state": "{delay_start}", "reason": "Radio transmission from the PCCU indicates that there are marine animals spotted near the testing area, thus necessitating a delay in starting the trial"}}
+Output: {{"predicted_state": "{delay_start}", "reason": "Radio transmission from the PCCU indicates that there are marine animals spotted near the testing area, thus necessitating a delay in starting the trial", "delay_type": "{npc}"}}
 
 EXAMPLE 6: Mistrial prediction
 Current State:\t{delay_end}
@@ -78,22 +80,28 @@ Potential next state options: {next_state_options[delay_end]['Options']}
 Output: {{"predicted_state": "{mistrial}", "reason": "Radio transmission from the Test Director indicates that operations are getting out of hand and therefore declares a mistrial."}}
 '''
 
+# As context you will be given a Current State and a series of radio transmissions broken out into separate tracks. 
+# The transmissions represent dialogue between stakeholders involved in maritime UAV test and evaluation trials.\n  
+# Given the context perform the following two sequential tasks:
+# 1. Decide if a change to the Current State is warranted given the transmissions. 
+#    - If no change is warranted simply return a json object as follows:
+#    - Output: {{"current_state": "<current state>"}}\n
+# 2. Based on your decision from step 1, if a change in state is warranted then choose from among the next state options and return your output to include, current state, predicted state, and your reasoning for choosing the next predicted state.  Follow the output guidelines below:
+#     - Output: {{"predicted_state": "<predicted state>", "reason": "<reason you chose the predicted state>"}}\n
+
 user = '''
-As context you will be given a Current State and a series of radio transmissions broken out into separate tracks. 
-The transmissions represent dialogue between stakeholders involved in maritime UAV test and evaluation trials.\n  
-Given the context perform the following two sequential tasks:
-1. Decide if a change to the Current State is warranted given the transmissions. 
-   - If no change is warranted simply return a json object as follows:
-   - Output: {{"current_state": "<current state>"}}\n
-2. Based on your decision from step 1, if a change in state is warranted then choose from among the next state options and return your output to include, current state, predicted state, and your reasoning for choosing the next predicted state.  Follow the output guidelines below:
-    - Output: {{"predicted_state": "<predicted state>", "reason": "<reason you chose the predicted state>"}}\n
+Use the following examples as guidance for making the following decisions when provided with a Current State and a series of radio transmissions:
+- 1. Should the state change based on the content/meaning of the transmissions?
+- 2. If a state change is warranted predict the next state based on the content/meaning of the transmissions. 
+- 3. If a "Delay Start" is predicted as the next state, then also determine the appropriate delay type.\n\n
 
 EXAMPLES
 --------------------------
-Use the following examples as your guide for predicting whether or not to change the state and if so, what to predict:
 {examples}
---------------------------
+--------------------------\n\n
 
+PREDICT
+--------------------------
 Current State: {current_state}
 Radio Transmissions -
 --------------------------

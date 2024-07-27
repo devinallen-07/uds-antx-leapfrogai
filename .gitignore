@@ -3,3 +3,4 @@ zarf-sbom
 *.ipynb*
 data/*
 .DS_Store
+*.env
