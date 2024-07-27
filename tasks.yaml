@@ -6,7 +6,7 @@ includes:
   - setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/setup.yaml
 
 tasks:
-  - name: default
+  - name: cluster-up
     description: Build and deploy SWF on UDS k3d-slim-dev
     actions:
       - task: setup:k3d-test-cluster

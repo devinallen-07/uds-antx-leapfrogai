@@ -12,3 +12,8 @@ spec:
         host: antx # antx.uds.dev
         gateway: tenant
         port: 3000
+    allow:
+      - direction: Ingress
+        remoteGenerated: IntraNamespace
+      - direction: Egress
+        remoteGenerated: IntraNamespace

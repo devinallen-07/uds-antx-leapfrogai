@@ -61,3 +61,16 @@ cd uds-bundles/dev/gpu
 uds create .
 # deploy the packages how your normally do with Zarf or UDS bundles
 ```
+
+## ANTX Application Frontend and Backend
+
+```
+cd src/backend
+uds run up # builds backend images, zarf package, deploys the cluster and the package
+cd ../..
+uds run package # builds the frontend image and zarf package
+uds zarf package deploy build/zarf-package-*.tar.zst --confirm
+```
+TODO:
+- [ ] Migrate each of these steps to the top level tasks file
+- [ ] Combine the zarf packages and zarf-config options into a UDS Bundle

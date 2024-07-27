@@ -9,3 +9,4 @@ data/*
 zarf-package-*.tar.zst
 build/*
 TODO.md
+src/backend/zarf-config.yaml
