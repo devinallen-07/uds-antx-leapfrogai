@@ -99,7 +99,6 @@ def get_current_run_id():
 def init_run():
    run_id = get_run_id()
    prefix = get_prefix()
-   wipe_data(prefix, run_id)
    keys = get_valkey_keys(prefix, run_id)
    init_outputs(keys)
 

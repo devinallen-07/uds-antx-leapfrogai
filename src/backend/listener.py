@@ -4,7 +4,7 @@ import os
 import json
 import traceback
 from subprocess import Popen
-from util.loaders import wipe_data
+from util.loaders import wipe_key, get_valkey_keys
 
 log = get_logger()
 
@@ -15,6 +15,9 @@ class Listener:
       self.processes = {}
 
    def spawn_process(self, bucket, key_prefix, run_id):
+      keys = get_valkey_keys(key_prefix, run_id)
+      metrics_key = keys["metrics_key"]
+      wipe_key(metrics_key)
       cmd = ["python3", "ingest.py", bucket, key_prefix, str(run_id)]
       log.info(f'Creating process with command: {cmd}')
       self.processes[key_prefix] = Popen(cmd)
