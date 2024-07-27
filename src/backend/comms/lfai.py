@@ -234,9 +234,9 @@ def build_user_message(base_user_prompt: str,
 
 
 def _format_response(response: requests.models.Response,
-                     data_dict: dict) -> str:
+                     data_dict: dict) -> dict:
    '''
-   Reformats model response from json to a string
+   Reformats model response from json to a dictionary
    '''
    json_response = response.json()
    state_response = json_response['choices'][0]['message']['content'].strip()
