@@ -291,16 +291,21 @@ def chat_completion(data_dict: dict,
       "max_tokens": max_tokens
    }
    try:
+      t1 = time.time()
       response = requests.post(URL_INFERENCE, headers=headers, data=json.dumps(data))
+      data_dict["inference_seconds"] = time.time() - t1
       if response.status_code == 200:
          if raw:
                return response.json()
          else: return _format_response(response, data_dict)
       else:
-         print('Response is not 200')
-         return response
+         log.warning('Inference Response is not 200')
+         log.warning(f"{resonse.json()}")
+         data_dict["inference_seconds"} = 0
+         data_dict["time_to_change"] = ""
+         return data_dict
    except Exception as e:
-      print(traceback.format_exc())
+      log.warning(traceback.format_exc())
 
 
    # I need the output of this function to be the data_dict with the following changes
