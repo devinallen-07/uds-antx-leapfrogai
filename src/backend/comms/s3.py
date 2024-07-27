@@ -30,7 +30,7 @@ def get_objects(prefix="", bucket=READ_BUCKET):
       response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
    except Exception as e:
       log.warning(f'Error listing objects in {bucket}: {e}')
-      log.warnging(traceback.format_exc())
+      log.warning(traceback.format_exc())
       return None
    if 'Contents' not in response:
       return []
@@ -51,6 +51,17 @@ def upload_file(file_path, key, bucket=WRITE_BUCKET):
       response = s3.upload_file(file_path, bucket, key)
    except Exception as e:
       log.warning(f'Error uploading {file_path} to s3://{bucket}/{key}')
+      log.warning(traceback.format_exc())
+      return False
+   return True
+
+def delete_key(key, bucket):
+   s3 = get_s3_client()
+   try:
+      resp = s3.delete_object(Bucket=bucket, Key=key)
+      log.info(f'{key} deleted from {bucket}')
+   except Exception as e:
+      log.warning(f"Error deleting {key} from s3://{bucket}")
       log.warning(traceback.format_exc())
       return False
    return True

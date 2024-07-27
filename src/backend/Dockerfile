@@ -6,12 +6,14 @@ USER root
 
 RUN mkdir /app/comms \
    && mkdir /app/util
-RUN mkdir /tmp/data/ \
-   && mkdir /tmp/logs/
+RUN mkdir /app/data \
+   && mkdir /app/log
 
 COPY *.py .
 COPY ./comms/*.py ./comms/
 COPY ./util/*.py ./util/
+COPY ./enums/*.py ./enums/
+COPY ./prompts/*.py ./prompts/
 COPY requirements.txt .
 
 RUN apt-get update -y && apt-get upgrade -y \
@@ -20,9 +22,7 @@ RUN apt-get update -y && apt-get upgrade -y \
    && pip3 install -r requirements.txt
 
 RUN chown -R 1001:1001 /app/
-RUN chown -R 1001:1001 /tmp/data/
 RUN chmod 755 /app/
-RUN chmod 755 /tmp/data/
 
 USER 1001
-CMD ["fastapi", "api.py"]
+CMD ["fastapi", "run", "api.py"]
