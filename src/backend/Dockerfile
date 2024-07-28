@@ -19,6 +19,7 @@ COPY requirements.txt .
 RUN apt-get update -y && apt-get upgrade -y \
    && apt-get install vim -y \
    && apt-get install curl -y \
+   && apt-get install ffmpeg -y \
    && pip3 install -r requirements.txt
 
 RUN chown -R 1001:1001 /app/

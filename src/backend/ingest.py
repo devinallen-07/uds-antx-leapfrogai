@@ -112,6 +112,8 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
       delay_type = ""
    for key in keys:
       start_time, end_time, track = get_audio_metadata(key)
+      if track == 'track2':
+         continue
       log.info(f"{key} metadata: {start_time}, {end_time}, track{track}")
       txt, metrics = ingest_file(key, data_dir,
                            metrics, bucket)
