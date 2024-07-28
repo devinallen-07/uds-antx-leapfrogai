@@ -62,7 +62,7 @@
 </Accordion>
 
 <div class="flex justify-center">
-	<Button class="mt-8 m-2" color="alternative" size="lg" block on:click={Api.start}>Start</Button>
-	<Button class="mt-8 m-2" color="alternative" size="lg" block on:click={Api.update}>Update</Button>
-	<Button class="mt-8 m-2" color="alternative" size="lg" block on:click={Api.end}>End</Button>
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.start}>Start</Button>
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.update}>Update</Button>
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.end}>End</Button>
 </div>
