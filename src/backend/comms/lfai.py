@@ -19,8 +19,8 @@ from typing import Any
 
 log = get_logger()
 
-URL_TRANSCRIPTION = 'https://leapfrogai-api.uds.dev/openai/v1/audio/transcriptions'
-URL_INFERENCE = 'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
+URL_TRANSCRIPTION = 'https://api.leapfrogai.svc.cluster.local:8080/openai/v1/audio/transcriptions'
+URL_INFERENCE = 'https://api.leapfrogai.svc.cluster.local:8080/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
@@ -66,11 +66,25 @@ def dummy_inference(data):
    data['inference_seconds'] = time.time() - t1
    return data  
 
+def build_empty_response():
+   performance_metrics = {
+      "timeToTranscribe": 0,
+      "tokens": 1,
+   }
+
+   result = {
+      "transcription": '',
+      "performanceMetrics": performance_metrics
+   }
+
+   return result
+
+
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
    # Check if the file exists
    if not os.path.exists(file_path):
       log.error(f"Error: File '{file_path}' does not exist.")
-      return ""
+      return build_empty_response()
 
    # Use ffprobe to get detailed information about the file
    command = f'ffprobe -v quiet -print_format json -show_format -show_streams "{file_path}"'
@@ -78,7 +92,8 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
 
    if result.returncode != 0:
       log.error(f"Error running ffprobe: {result.stderr}")
-      return ""
+      log.warning(traceback.format_exc())
+      return build_empty_response()
 
    try:
       probe_data = json.loads(result.stdout)
@@ -86,14 +101,14 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
       # Check if there are any streams in the file
       if 'streams' not in probe_data or not probe_data['streams']:
          log.info(f"No streams found in {file_path}")
-         return ""
+         return build_empty_response()
 
       # Look for an audio stream
       audio_streams = [stream for stream in probe_data['streams'] if stream['codec_type'] == 'audio']
       
       if not audio_streams:
          log.info(f"No audio streams found in {file_path}")
-         return ""
+         return build_empty_response()
 
       if logging:
          log.info(f"Audio stream found in {file_path}")
@@ -103,7 +118,7 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
 
    except json.JSONDecodeError:
       log.error(f"Error parsing ffprobe output for {file_path}")
-      return ""
+      return build_empty_response()
 
    # Split audio based on silence or provided segmentation
    if not segmentation:
