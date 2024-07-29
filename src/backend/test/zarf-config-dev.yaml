@@ -10,3 +10,5 @@ package:
       VALKEY_HOST: valkey-master.antx.svc.cluster.local
       VALKEY_PORT: 6379
       LEAPFROG_API_KEY: lfai-key # change this
+      #IS_TEST_DEPLOYMENT: 1 #un-comment if testing without LFAI
+      

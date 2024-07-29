@@ -10,6 +10,8 @@ log = get_logger()
 
 VALKEY_ENGINE = None
 
+TIME_ZONE = "US/Pacific"
+
 def create_valkey_connection():
    """Creates a connection to valkey using environment variables
       :returns: redis.Redis object
@@ -67,6 +69,8 @@ def get_output_frame(key):
    df = pd.read_json(StringIO(data.decode('utf-8')))
    df['start'] = pd.to_datetime(df['start'])
    df['end'] = pd.to_datetime(df['end'])
+   df['start'] = df['start'].dt.tz_localize(tz=TIME_ZONE)
+   df['end'] = df['end'].dt.tz_localize(tz=TIME_ZONE)
    return df
 
 def set_output_frame(key, df):
@@ -75,6 +79,7 @@ def set_output_frame(key, df):
       :param df: Pandas.DataFrame object to store
       :returns: None
    """
+   df = df.sort_values('start', ascending=True, ignore_index=True)
    df['start'] = df['start'].dt.strftime(DATETIME_FORMAT)
    df['end'] = df['end'].dt.strftime(DATETIME_FORMAT)
    log.debug(f'Saving frame to {key}:\n{df.tail()}')

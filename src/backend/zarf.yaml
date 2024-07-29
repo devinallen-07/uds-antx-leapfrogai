@@ -37,13 +37,11 @@ variables:
     description: API key for auth beaerer header
     prompt: true
     sensitive: true
+  - name: IS_TEST_DEPLOYMENT
+    description: Whether to do actual LFAI calls or use fake generated data.  Set to "0" for real calls, "1" for fake.
+    prompt: true
+    default: 0
 components:
-  - name: antx-setup
-    required: true
-    manifests:
-      - name: namespace
-        files:
-          - manifests/namespace.yaml
   - name: backend
     required: true
     manifests:
