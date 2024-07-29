@@ -82,6 +82,7 @@ def build_empty_response():
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
    # Check if the file exists
+   #return dummy_transcribe(file_path)
    if not os.path.exists(file_path):
       log.error(f"Error: File '{file_path}' does not exist.")
       return build_empty_response()
@@ -188,7 +189,9 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
    else:
       return ' '.join(transcriptions)
 
-def transcribe_audio(file_path):   return dummy_inference(data_dict)
+def transcribe_audio(file_path):
+   url_transcription = URL_TRANSCRIPTION
+   headers = {
       'accept': 'application/json',
       'Authorization': f'Bearer {LEAPFROG_API_KEY}'
    }
@@ -288,6 +291,7 @@ def chat_completion(data_dict: dict,
                     stream: bool=False,
                     raw: bool=False
                     ) -> str | dict:
+   #return dummy_inference(data_dict)
    current_state = data_dict['state']
    tracks = parse_data_object(data_dict)
    user_prompt = build_user_message(user, 
