@@ -36,7 +36,9 @@ next_state_options = {
             },
     States.RTB.value : 
         {"Options": 
-            [States.IN_TRANSIT.value]
+            [States.IN_TRANSIT.value,
+             States.MISTRIAL.value,
+             States.DELAY_START.value]
             }
 
 }
