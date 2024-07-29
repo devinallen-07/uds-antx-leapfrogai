@@ -59,7 +59,6 @@ if __name__ == '__main__':
       clear_s3()
       upload_dummy_data(prefix, 1)
    elif mode == "start_ingestion":
-      wipe_data
       spawn_ingestion(prefix)
    elif mode == "start_upload":
       upload_dummy_data(prefix, 20)
