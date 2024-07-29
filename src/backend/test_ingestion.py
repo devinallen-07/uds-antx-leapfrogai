@@ -13,6 +13,7 @@ log = get_logger()
 def upload_dummy_data(prefix, iters):
    for i in range(iters):
       choices = os.listdir("./test/audio/")
+      choices = [x for x in choices if x.endswith('.mp3')]
       choices = np.random.choice(choices, 4)
       for track in range(4):
          file_path = f"./test/audio/{choices[track]}"

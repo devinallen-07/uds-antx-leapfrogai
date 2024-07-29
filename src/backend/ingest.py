@@ -144,8 +144,8 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
          num_no_updates += 1
          log.info(f"No new S3 keys to be processed")
          time.sleep(20)
-         if num_no_updates == 1:
-            push_logs(valkey_keys["output_key"])
+         # if num_no_updates == 1:
+         #    push_logs(valkey_keys["output_key"])
          continue
       num_no_updates = 0
       data = process_batch(files, valkey_keys,
@@ -154,6 +154,7 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
          data[start_time] = chat_completion(data_dict)
          metrics.update_inferences(data_dict["inference_seconds"])
       push_data(data, metrics, valkey_keys)
+      push_logs(valkey_keys["output_key"])
 
 def test_loop(bucket, prefix, valkey_keys, data_dir):
    iteration = 0

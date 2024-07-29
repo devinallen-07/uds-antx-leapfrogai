@@ -19,8 +19,8 @@ from typing import Any
 
 log = get_logger()
 
-URL_TRANSCRIPTION = 'https://api.leapfrogai.svc.cluster.local:8080/openai/v1/audio/transcriptions'
-URL_INFERENCE = 'https://api.leapfrogai.svc.cluster.local:8080/openai/v1/chat/completions'
+URL_TRANSCRIPTION = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/audio/transcriptions'
+URL_INFERENCE = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
@@ -271,7 +271,11 @@ def _format_response(response: requests.models.Response,
       if "delay_type" in state_response:
          data_dict["delay_type"] = state_response["delay_type"]
       else:
-         data_dict["delay_type"] = random.choice(list(DelayReason)).value
+         try:
+            data_dict["delay_type"] = state_response["delay_type"]
+         except:
+            data_dict["delay_type"] = random.choice(list(DelayReason)).value
+            log.debug(f"Did not find delay type in response, defaulting to random delay type.")
    if "time_to_change" in state_response:
       data_dict["time_to_change"] = state_response["time_to_change"]
    else:
