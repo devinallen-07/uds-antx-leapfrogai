@@ -251,7 +251,7 @@ def build_user_message(base_user_prompt: str,
     '''
     Builds user message string variable from dynamic string parameters.
     '''
-    next_state_options = next_state_options_dict[current_state]
+    next_state_options = next_state_options_dict[current_state]['Options']
     user_prompt = base_user_prompt.format(examples=examples, 
                                           current_state=current_state, 
                                           transmissions=radio_tracks, 
