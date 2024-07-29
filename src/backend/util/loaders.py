@@ -272,7 +272,8 @@ def get_state(df):
    current_state = df['state'].values[-1]
    if current_state.startswith("Delay"):
       delay_reason = df["delay type"].values[-1]
-
+      if delay_reason == "":
+         return None
       delay_reason = DelayReason(delay_reason)
       resolution = df["time_to_change"].values[-1]
       dly = Delay(**{

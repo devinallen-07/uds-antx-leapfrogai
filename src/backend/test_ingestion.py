@@ -29,7 +29,7 @@ def upload_dummy_data(prefix, iters):
          sec = ts.second
          key = f"{prefix}track{track}/{y}-{m:02d}-{d:02d} {h:02d}-{min:02d}-{sec:02d}_track{track}.mp3"
          upload_file(file_path, key, READ_BUCKET)
-      time.sleep(67)
+      time.sleep(5)
 
 def spawn_ingestion(prefix):
    run_id = 1
@@ -41,6 +41,8 @@ def spawn_ingestion(prefix):
 
 def clear_s3():
    keys = get_objects()
+   if keys == None:
+    return
    for key in keys:
       delete_key(key, READ_BUCKET)
 
@@ -57,7 +59,6 @@ if __name__ == '__main__':
       # clear_s3()
       upload_dummy_data(prefix, 1)
    elif mode == "start_ingestion":
-      wipe_data
       spawn_ingestion(prefix)
    elif mode == "start_upload":
       upload_dummy_data(prefix, 20)

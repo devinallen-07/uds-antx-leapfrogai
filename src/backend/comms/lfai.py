@@ -23,7 +23,7 @@ URL_TRANSCRIPTION = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/audi
 URL_INFERENCE = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
-LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
+LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', 'test')
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")
@@ -82,6 +82,7 @@ def build_empty_response():
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
    # Check if the file exists
+   #return dummy_transcribe(file_path)
    if not os.path.exists(file_path):
       log.error(f"Error: File '{file_path}' does not exist.")
       return build_empty_response()
@@ -290,6 +291,7 @@ def chat_completion(data_dict: dict,
                     stream: bool=False,
                     raw: bool=False
                     ) -> str | dict:
+   #return dummy_inference(data_dict)
    current_state = data_dict['state']
    tracks = parse_data_object(data_dict)
    user_prompt = build_user_message(user, 
