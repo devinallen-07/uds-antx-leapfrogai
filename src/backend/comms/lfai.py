@@ -188,9 +188,7 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
    else:
       return ' '.join(transcriptions)
 
-def transcribe_audio(file_path):
-   url_transcription = URL_TRANSCRIPTION
-   headers = {
+def transcribe_audio(file_path):   return dummy_inference(data_dict)
       'accept': 'application/json',
       'Authorization': f'Bearer {LEAPFROG_API_KEY}'
    }
