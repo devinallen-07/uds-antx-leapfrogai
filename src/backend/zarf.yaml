@@ -44,18 +44,6 @@ components:
       - name: namespace
         files:
           - manifests/namespace.yaml
-  - name: valkey-deployment
-    required: true
-    charts:
-      - name: valkey
-        namespace: antx
-        version: 0.3.10
-        url: https://charts.bitnami.com/bitnami
-        repoName: valkey
-        valuesFiles:
-          - values/valkey.yaml
-    images:
-      - bitnami/valkey:7.2.5-debian-12-r7
   - name: backend
     required: true
     manifests:

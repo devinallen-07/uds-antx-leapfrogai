@@ -10,3 +10,7 @@ zarf-package-*.tar.zst
 build/*
 TODO.md
 src/backend/zarf-config.yaml
+src/backend/venv
+src/backend/test/audio
+src/backend/valkey/zarf-config.yaml
+uds-bundle-k3d-core-slim-dev-*.tar.zst

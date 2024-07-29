@@ -9,6 +9,8 @@ REGION = os.environ.get('S3_REGION', None)
 ENDPOINT = os.environ.get('S3_ENDPOINT', 'http://localhost:9000')
 WRITE_BUCKET = os.environ.get('WRITE_BUCKET', 'uds')
 READ_BUCKET = os.environ.get('READ_BUCKET', 'uds')
+WRITE_BUCKET = os.environ.get('WRITE_BUCKET', 'uds')
+READ_BUCKET = os.environ.get('READ_BUCKET', 'uds')
 
 def get_s3_client():
    """Returns boto3 s3 client from environment variables"""
