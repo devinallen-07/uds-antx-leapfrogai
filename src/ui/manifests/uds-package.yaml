@@ -9,7 +9,7 @@ spec:
       - service: ui
         selector:
           app: ui
-        host: antx # antx.uds.dev
+        host: antx
         gateway: tenant
         port: 3000
     allow:

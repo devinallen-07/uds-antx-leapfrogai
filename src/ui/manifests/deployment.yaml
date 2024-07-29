@@ -19,9 +19,6 @@ spec:
       - name: ui
         image: ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1
         imagePullPolicy: Always
-        env:
-        - name: BASE_URL
-          value: http://api-service.antx.svc.cluster.local:8000
         resources:
           requests:
             cpu: "100m"
