@@ -9,7 +9,7 @@ RUN mkdir /app/comms \
 RUN mkdir /app/data \
    && mkdir /app/log
 
-COPY *.py .
+COPY *.py ./
 COPY ./comms/*.py ./comms/
 COPY ./util/*.py ./util/
 COPY ./enums/*.py ./enums/
@@ -19,6 +19,7 @@ COPY requirements.txt .
 RUN apt-get update -y && apt-get upgrade -y \
    && apt-get install vim -y \
    && apt-get install curl -y \
+   && apt-get install ffmpeg -y \
    && pip3 install -r requirements.txt
 
 RUN chown -R 1001:1001 /app/

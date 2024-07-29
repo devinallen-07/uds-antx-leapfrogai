@@ -1,10 +1,10 @@
 package:
   deploy:
     set:
-      S3_ACCESS_KEY: test-user
-      S3_SECRET_KEY: test-secret
-      S3_READ_BUCKET_NAME: antx
-      S3_WRITE_BUCKET_NAME: antx
+      S3_ACCESS_KEY: 9GHSyatJi0LlWfecGT7K
+      S3_SECRET_KEY: cE1buvYmHR1KEa3B4p2k1LQgvtoT9JfisvbxzYKX
+      S3_READ_BUCKET_NAME: uds
+      S3_WRITE_BUCKET_NAME: uds
       S3_ENDPOINT: http://minio.uds-dev-stack.svc.cluster.local:9000
       VALKEY_PASSWORD: test-password
       VALKEY_HOST: valkey-master.antx.svc.cluster.local
