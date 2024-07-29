@@ -3,7 +3,8 @@ sys.path.append('../')
 from backend.enums.states import States 
 from backend.enums.delay_types import DelayTypes
 
-(   trial_start,
+(   in_transit,
+    trial_start,
     trial_end, 
     delay_start,
     delay_end,
@@ -30,6 +31,8 @@ of each component are provided below:\n
 
 1. A "Current State" from among the following State Options: {[e.value for e in States]}
     Current State definitions are as follows:\n
+
+    - {in_transit}: Boats are in transit to the Operating Area, this state precedes the Trial Start state.
     - {trial_start}:  Formal initiation of trial phase and evaluation and testing of UAV. This state opens the Trial Window.
     - {trial_end}: Conclusion of testing and evaluation of UAV after all tests performed and at the discretion of the Test Director. This state closes the trial Window.
     - {delay_start}:  A conditional state that prevents testing and evaluation while within a Trial Window due to one or more of the following factors. This begins a Delay Period.
@@ -52,3 +55,5 @@ Output Format: Return your response as a json object in the following format:\n
     - If predicted state is of type "{delay_start}" then return a Delay Type as well from among the following options: {[k.value for k in DelayTypes]}:
         {{"predicted_state": "Delay Start", "reasoning": "<your reasoning for predicted a Delay Start>", "delay_type": "<delay type>"}}
 ''' 
+if __name__ == '__main__':
+    print([k.value for k in States])
