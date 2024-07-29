@@ -112,6 +112,8 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
       delay_type = ""
    for key in keys:
       start_time, end_time, track = get_audio_metadata(key)
+      if track == 'track2':
+         continue
       log.info(f"{key} metadata: {start_time}, {end_time}, track{track}")
       txt, metrics = ingest_file(key, data_dir,
                            metrics, bucket)
@@ -142,8 +144,8 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
          num_no_updates += 1
          log.info(f"No new S3 keys to be processed")
          time.sleep(20)
-         if num_no_updates == 1:
-            push_logs(valkey_keys["output_key"])
+         # if num_no_updates == 1:
+         #    push_logs(valkey_keys["output_key"])
          continue
       num_no_updates = 0
       data = process_batch(files, valkey_keys,
@@ -152,6 +154,7 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
          data[start_time] = chat_completion(data_dict)
          metrics.update_inferences(data_dict["inference_seconds"])
       push_data(data, metrics, valkey_keys)
+      push_logs(valkey_keys["output_key"])
 
 def test_loop(bucket, prefix, valkey_keys, data_dir):
    iteration = 0
@@ -175,9 +178,9 @@ def ingest_data(bucket, prefix, run_id):
    except Exception as e:
       log.warning(f'Error with ingestion setup: {e}')
       trc = traceback.format_exc()
-      cleanup(data_dir)
-      send_sos(prefix, bucket, run_id, trc, False)
-      sys.exit(1)
+      # cleanup(data_dir)
+      send_sos(prefix, bucket, run_id, trc, True)
+      # sys.exit(1)
 
    #ingestion
    try:
@@ -185,13 +188,13 @@ def ingest_data(bucket, prefix, run_id):
    except Exception as e:
       log.warning(f'Error with ingestion loop: {e}')
       trc = traceback.format_exc()
-      cleanup(data_dir)
-      send_sos(prefix, bucket, run_id, trc, False)
-      sys.exit(1)
+      # cleanup(data_dir)
+      send_sos(prefix, bucket, run_id, trc, True)
+      # sys.exit(1)
 
    log.info(f'Ingestion stalled due to {STALLED} updates with no new files')
    cleanup(data_dir)
-   send_sos(prefix, bucket, run_id, "", False)
+   send_sos(prefix, bucket, run_id, "", True)
 
 if __name__ == '__main__':
    setup_logging()

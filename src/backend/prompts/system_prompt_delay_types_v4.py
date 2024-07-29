@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
-from backend.enums.states import States 
-from backend.enums.delay_types import DelayTypes
+from enums.states import States 
+from enums.delay_types import DelayTypes
 
 (   in_transit,
     trial_start,

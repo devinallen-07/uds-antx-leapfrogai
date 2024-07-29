@@ -13,6 +13,7 @@ log = get_logger()
 def upload_dummy_data(prefix, iters):
    for i in range(iters):
       choices = os.listdir("./test/audio/")
+      choices = [x for x in choices if x.endswith('.mp3')]
       choices = np.random.choice(choices, 4)
       for track in range(4):
          file_path = f"./test/audio/{choices[track]}"
@@ -52,8 +53,8 @@ if __name__ == '__main__':
    mode = args.mode
    log.info(f"Running testing with mode={mode}")
    if mode == "setup":
-      wipe_data(prefix, 1)
-      clear_s3()
+      # wipe_data(prefix, 1)
+      # clear_s3()
       upload_dummy_data(prefix, 1)
    elif mode == "start_ingestion":
       wipe_data
