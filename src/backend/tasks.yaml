@@ -6,6 +6,17 @@ tasks:
       - task: registry-up
       - task: push-image
       - task: build-package
+      - task: build-package-valkey
+      - task: deploy-package-valkey
+      - task: deploy-package
+      - task: registry-down
+  - name: update-antx
+    description: updates teh antx backend and redeploys, does not touch valkey
+    actions:
+      - task: registry-up
+      - task: push-image
+      - task: remove-package
+      - task: build-package
       - task: deploy-package
       - task: registry-down
   - name: down
@@ -60,3 +71,21 @@ tasks:
     actions:
       - cmd: docker kill registry
       - cmd: docker rm registry
+  ### Valkey Tasks ###
+  - name: build-package-valkey
+    description: Builds the valkey zarf package
+    actions:
+      - cmd: cd valkey && uds zarf package create --confirm --skip-sbom && cd .. # we should be able to set with.path: dir, but it's not working.
+      - cmd: cp test/zarf-config-dev.yaml valkey/zarf-config.yaml
+  - name: deploy-package-valkey
+    description: Deploys the valkey zarf package
+    actions:
+      - cmd: uds zarf package deploy valkey/zarf-package-valkey-*.tar.zst --confirm
+  - name: remove-package-valkey
+    description: Removes the valkey zarf package
+    actions:
+      - cmd: uds zarf package remove valkey --confirm
+  - name: clean-valkey
+    description: Cleans up valkey zarf package files
+    actions:
+      - cmd: rm -rf valkey/zarf-config.yaml valkey/zarf-package-valkey-*.tar.zst
