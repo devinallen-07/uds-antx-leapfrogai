@@ -23,7 +23,7 @@ URL_TRANSCRIPTION = 'https://leapfrogai-api.burning.boats/openai/v1/audio/transc
 URL_INFERENCE = 'https://leapfrogai-api.burning.boats/openai/v1/chat/completions'#'https://leapfrogai-api.uds.dev/openai/v1/chat/completions'
 
 # need to decide on the naming convention for the API key
-LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', None)
+LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', 'test')
 if not LEAPFROG_API_KEY:
    log.error("LEAPFROG_API_KEY environment variable is not set")
    raise ValueError("LEAPFROG_API_KEY environment variable is not set")

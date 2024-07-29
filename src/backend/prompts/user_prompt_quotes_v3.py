@@ -1,6 +1,6 @@
-from backend.enums.states import States 
-from backend.enums.tracks import Tracks, track_mapping
-from backend.prompts.state_options import next_state_options
+from enums.states import States 
+from enums.tracks import Tracks, track_mapping
+from prompts.state_options import next_state_options
 from typing import Any
 
 trial_start = States.TRIAL_START.value 

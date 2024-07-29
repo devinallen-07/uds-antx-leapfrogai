@@ -1,5 +1,5 @@
-from backend.enums.states import States 
-from backend.enums.delay_types import DelayTypes
+from enums.states import States 
+from enums.delay_types import DelayTypes
 
 trial_start = States.TRIAL_START.value 
 trial_end = States.TRIAL_END.value

@@ -87,6 +87,27 @@ def ingest_file(key: str,
    os.remove(new_path)
    return txt, metrics
 
+def get_start_times(keys, current_state, delay_type):
+   data = dict()
+   start_times = []
+   for key in keys:
+      start_time, end_time, track = get_audio_metadata(key)
+      log.info(f"{key} metadata: {start_time}, {end_time}, {track}")
+      if start_time not in data:
+         start_times.append(start_time)
+         data[start_time] = {
+            "start_time": start_time,
+            "end_time": end_time,
+            track: key,
+            "state": current_state,
+            "delay_type": delay_type
+         }
+      else:
+         to_append = data[start_time]
+         to_append[track] = key
+         data[start_time] = to_append
+   return data, sorted(start_times)
+
 def process_batch(keys: list, valkey_keys:dict, bucket:str,
                   metrics: MetricTracker, data_dir:str)->dict:
    """Processes a batch of new S3 keys
@@ -95,7 +116,8 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
    :param bucket: S3 bucket name to pull from
    :param metrics: MetricTracker for current run
    :param data_dir: str path to the tmp directory to store audio files
-   :returns: Dicctionary with the following stucture:
+   :returns None:
+   :data_dict: Dictionary with the following stucture:
       {
          start_time: datetime64[ns]
          end_time: datetime64[ns]
@@ -110,28 +132,27 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
    current_state, delay_type = get_current_state(valkey_keys)
    if not current_state.startswith("Delay"):
       delay_type = ""
-   for key in keys:
-      start_time, end_time, track = get_audio_metadata(key)
-      log.info(f"{key} metadata: {start_time}, {end_time}, track{track}")
-      txt, metrics = ingest_file(key, data_dir,
-                           metrics, bucket)
-      log.debug(f"{track}:{txt}")
-      if start_time not in data:
-         data[start_time] = {
-            "start_time":start_time,
-            "end_time":end_time,
-            track:txt,
-            "state": current_state,
-            "delay type": delay_type
-         }
-      else:
-         to_append = data[start_time]
-         to_append[f"{track}"] = txt
-         data[start_time] = to_append
-      processed_files.append(key)
-   log.info(f"data:{data}")
-   set_json_data(valkey_keys['files_key'], processed_files)
-   return data
+   data, start_times = get_start_times(keys, current_state, delay_type)
+   log.info(f"{data}")
+   log.info(f"{start_times}")
+   for start_time in start_times:
+      data_dict = data[start_time]
+      batch_files = []
+      for key, value in data_dict.items():
+         if key.startswith("track"):
+            batch_files.append([key, value])
+      for track, key in batch_files:
+         txt, metrics = ingest_file(key, data_dir,
+                              metrics, bucket)
+         log.debug(f"{key}:{txt}")
+         data_dict[track] = txt
+         processed_files.append(key)
+      data_dict = chat_completion(data_dict)
+      metrics.update_inferences(data_dict["inference_seconds"])
+      set_json_data(valkey_keys["files_key"], processed_files)
+      push_data({start_time:data_dict}, metrics, valkey_keys)
+      push_logs(valkey_keys["output_key"])
+   return metrics
 
 def ingest_loop(bucket, prefix, valkey_keys, data_dir):
    num_no_updates = 0
@@ -146,19 +167,15 @@ def ingest_loop(bucket, prefix, valkey_keys, data_dir):
             push_logs(valkey_keys["output_key"])
          continue
       num_no_updates = 0
-      data = process_batch(files, valkey_keys,
+      metrics = process_batch(files, valkey_keys,
                            bucket, metrics, data_dir)
-      for start_time, data_dict in data.items():
-         data[start_time] = chat_completion(data_dict)
-         metrics.update_inferences(data_dict["inference_seconds"])
-      push_data(data, metrics, valkey_keys)
 
 def test_loop(bucket, prefix, valkey_keys, data_dir):
    iteration = 0
    while True:
       test_update(valkey_keys["output_key"], valkey_keys["metrics_key"])
       iteration += 1
-      push_logs(valkey_keys["output_key"], prefix)
+      push_logs(valkey_keys["output_key"])
       time.sleep(62)
 
 def cleanup(data_dir):
