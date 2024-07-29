@@ -82,7 +82,7 @@ def get_current_state(valkeys):
    return current_state, delay_reason   
 
 def get_prefix():
-   ts = pd.Timestamp("now")
+   ts = pd.Timestamp("now", tz="US/Pacific")
    y = ts.year
    m = ts.month
    d = ts.day

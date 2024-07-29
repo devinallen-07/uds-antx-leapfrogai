@@ -11,10 +11,10 @@ import traceback
 from util.logs import get_logger
 from util.objects import CurrentState, DelayReason
 from util.loaders import format_timediff, get_random_string
-from prompts.system_prompt_quotes_v3 import sys_prompt
+from prompts.system_prompt_delay_types_v4 import sys_prompt
 from enums.tracks import track_mapping
 from prompts.state_options import next_state_options
-from prompts.user_prompt_quotes_v3 import user, examples
+from prompts.user_prompt_delay_type_v4 import user, examples
 from typing import Any
 
 log = get_logger()
@@ -86,83 +86,91 @@ def build_transcribe_request(file_path, response_type='json', segmentation=[], l
       log.error(f"Error: File '{file_path}' does not exist.")
       return build_empty_response()
 
-   # Use ffprobe to get detailed information about the file
-   command = f'ffprobe -v quiet -print_format json -show_format -show_streams "{file_path}"'
-   result = subprocess.run(command, capture_output=True, text=True, shell=True)
+   # # Use ffprobe to get detailed information about the file
+   # command = f'ffprobe -v quiet -print_format json -show_format -show_streams "{file_path}"'
+   # result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
-   if result.returncode != 0:
-      log.error(f"Error running ffprobe: {result.stderr}")
-      log.warning(traceback.format_exc())
-      return build_empty_response()
+   # if result.returncode != 0:
+   #    log.error(f"Error running ffprobe: {result.stderr}")
+   #    log.warning(traceback.format_exc())
+   #    return build_empty_response()
 
-   try:
-      probe_data = json.loads(result.stdout)
+   # try:
+   #    probe_data = json.loads(result.stdout)
       
-      # Check if there are any streams in the file
-      if 'streams' not in probe_data or not probe_data['streams']:
-         log.info(f"No streams found in {file_path}")
-         return build_empty_response()
+   #    # Check if there are any streams in the file
+   #    if 'streams' not in probe_data or not probe_data['streams']:
+   #       log.info(f"No streams found in {file_path}")
+   #       return build_empty_response()
 
-      # Look for an audio stream
-      audio_streams = [stream for stream in probe_data['streams'] if stream['codec_type'] == 'audio']
+   #    # Look for an audio stream
+   #    audio_streams = [stream for stream in probe_data['streams'] if stream['codec_type'] == 'audio']
       
-      if not audio_streams:
-         log.info(f"No audio streams found in {file_path}")
-         return build_empty_response()
+   #    if not audio_streams:
+   #       log.info(f"No audio streams found in {file_path}")
+   #       return build_empty_response()
 
-      if logging:
-         log.info(f"Audio stream found in {file_path}")
-         log.info(f"Audio codec: {audio_streams[0].get('codec_name', 'Unknown')}")
-         log.info(f"Sample rate: {audio_streams[0].get('sample_rate', 'Unknown')} Hz")
-         log.info(f"Channels: {audio_streams[0].get('channels', 'Unknown')}")
+   #    if logging:
+   #       log.info(f"Audio stream found in {file_path}")
+   #       log.info(f"Audio codec: {audio_streams[0].get('codec_name', 'Unknown')}")
+   #       log.info(f"Sample rate: {audio_streams[0].get('sample_rate', 'Unknown')} Hz")
+   #       log.info(f"Channels: {audio_streams[0].get('channels', 'Unknown')}")
 
-   except json.JSONDecodeError:
-      log.error(f"Error parsing ffprobe output for {file_path}")
-      return build_empty_response()
+   # except json.JSONDecodeError:
+   #    log.error(f"Error parsing ffprobe output for {file_path}")
+   #    return build_empty_response()
 
-   # Split audio based on silence or provided segmentation
-   if not segmentation:
-      split_command = f'ffmpeg -i "{file_path}" -af silencedetect=noise=-30dB:d=0.5 -f null - 2>&1'
-      output = subprocess.run(split_command, capture_output=True, text=True, shell=True).stderr
+   # # Split audio based on silence or provided segmentation
+   # if not segmentation:
+   #    split_command = f'ffmpeg -i "{file_path}" -af silencedetect=noise=-30dB:d=0.5 -f null - 2>&1'
+   #    output = subprocess.run(split_command, capture_output=True, text=True, shell=True).stderr
 
-      # Parse silence detection output
-      silence_ends = []
-      silence_starts = []
-      for line in output.split('\n'):
-         if 'silence_end' in line:
-               silence_ends.append(float(line.split('silence_end: ')[1].split(' ')[0]))
-         elif 'silence_start' in line:
-               silence_starts.append(float(line.split('silence_start: ')[1].split(' ')[0]))
+   #    # Parse silence detection output
+   #    silence_ends = []
+   #    silence_starts = []
+   #    for line in output.split('\n'):
+   #       if 'silence_end' in line:
+   #             silence_ends.append(float(line.split('silence_end: ')[1].split(' ')[0]))
+   #       elif 'silence_start' in line:
+   #             silence_starts.append(float(line.split('silence_start: ')[1].split(' ')[0]))
 
-      # Create chunks
-      chunks = []
-      if silence_starts and silence_ends:
-         chunks.append((0, silence_starts[0]))
-         for i in range(len(silence_ends) - 1):
-               chunks.append((silence_ends[i], silence_starts[i + 1]))
-         chunks.append((silence_ends[-1], None))  # Until the end of the file
-      else:
-         chunks.append((0, None))  # Whole file if no silence detected
-   else:
-      chunks = segmentation
+   #    # Create chunks
+   #    chunks = []
+   #    if silence_starts and silence_ends:
+   #       chunks.append((0, silence_starts[0]))
+   #       for i in range(len(silence_ends) - 1):
+   #             chunks.append((silence_ends[i], silence_starts[i + 1]))
+   #       chunks.append((silence_ends[-1], None))  # Until the end of the file
+   #    else:
+   #       chunks.append((0, None))  # Whole file if no silence detected
+   # else:
+   #    chunks = segmentation
 
+   # transcriptions = []
+   # times = []
+   # tokens = 0
+
+   # with tempfile.TemporaryDirectory() as temp_dir:
+   #    for i, (start, end) in enumerate(chunks):
+   #       chunk_path = os.path.join(temp_dir, f'chunk_{i}.mp3')
+   #       if end:
+   #             command = f'ffmpeg -v quiet "{file_path}" -ss {start} -to {end} "{chunk_path}" -y'
+   #       else:
+   #             command = f'ffmpeg -v quiet -i "{file_path}" -ss {start} "{chunk_path}" -y'
+   #       subprocess.run(command, shell=True, check=True)
+         
+         # transcription, time_taken = transcribe_audio(chunk_path)
+         # tokens += len(transcription.split(' '))
+         # transcriptions.append(transcription)
+         # times.append(time_taken)
    transcriptions = []
    times = []
-   tokens = 0
-
-   with tempfile.TemporaryDirectory() as temp_dir:
-      for i, (start, end) in enumerate(chunks):
-         chunk_path = os.path.join(temp_dir, f'chunk_{i}.mp3')
-         if end:
-               command = f'ffmpeg -v quiet "{file_path}" -ss {start} -to {end} "{chunk_path}" -y'
-         else:
-               command = f'ffmpeg -v quiet -i "{file_path}" -ss {start} "{chunk_path}" -y'
-         subprocess.run(command, shell=True, check=True)
-         
-         transcription, time_taken = transcribe_audio(chunk_path)
-         tokens += len(transcription.split(' '))
-         transcriptions.append(transcription)
-         times.append(time_taken)
+   tokens = 1
+   
+   transcription, time_taken = transcribe_audio(file_path)
+   tokens += len(transcription.split(' '))
+   transcriptions.append(transcription)
+   times.append(time_taken)
 
    # Calculate performance metrics  
    performance_metrics = {
