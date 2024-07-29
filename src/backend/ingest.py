@@ -142,13 +142,24 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
          if key.startswith("track"):
             batch_files.append([key, value])
       for track, key in batch_files:
-         txt, metrics = ingest_file(key, data_dir,
-                              metrics, bucket)
-         log.debug(f"{key}:{txt}")
+         try:
+            txt, metrics = ingest_file(key, data_dir,
+                                 metrics, bucket)
+            log.debug(f"{key}:{txt}")
+         except Exception as e:
+            log.warning(f'Error transcribing key {key}: {e}')
+            log.warning(traceback.format_exec())
+            txt = ""
          data_dict[track] = txt
          processed_files.append(key)
-      data_dict = chat_completion(data_dict)
-      metrics.update_inferences(data_dict["inference_seconds"])
+      try:
+         data_dict = chat_completion(data_dict)
+         metrics.update_inferences(data_dict["inference_seconds"])
+      except Exception as e:
+         log.warning(f'Error inferring with data {data_dict}: {e}')
+         log.warning(traceback.format_exec())
+         data_dict["time_to_change"] = "00:00"
+         data_dict["inference_seconds"] = 0
       set_json_data(valkey_keys["files_key"], processed_files)
       push_data({start_time:data_dict}, metrics, valkey_keys)
       push_logs(valkey_keys["output_key"])
