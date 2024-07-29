@@ -22,6 +22,8 @@ log = get_logger()
 URL_TRANSCRIPTION = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/audio/transcriptions'
 URL_INFERENCE = 'http://api.leapfrogai.svc.cluster.local:8080/openai/v1/chat/completions'
 
+TEST_DEPLOYMENT = int(os.environ.get("IS_TEST_DEPLOYMENT", 0))
+
 # need to decide on the naming convention for the API key
 LEAPFROG_API_KEY = os.environ.get('LEAPFROG_API_KEY', 'test')
 if not LEAPFROG_API_KEY:
@@ -81,8 +83,9 @@ def build_empty_response():
 
 
 def build_transcribe_request(file_path, response_type='json', segmentation=[], logging=False):
+   if TEST_DEPLOYMENT:
+      return dummy_transcribe(file_path)
    # Check if the file exists
-   #return dummy_transcribe(file_path)
    if not os.path.exists(file_path):
       log.error(f"Error: File '{file_path}' does not exist.")
       return build_empty_response()
@@ -268,6 +271,7 @@ def _format_response(response: requests.models.Response,
    log.info(state_response)
    if "predicted_state" in state_response:
       data_dict["state"] = state_response["predicted_state"]
+      return dummy_inference(data_dict)
    if data_dict["state"].startswith("Delay"):
       if "delay_type" in state_response:
          data_dict["delay_type"] = state_response["delay_type"]
@@ -291,7 +295,8 @@ def chat_completion(data_dict: dict,
                     stream: bool=False,
                     raw: bool=False
                     ) -> str | dict:
-   #return dummy_inference(data_dict)
+   if TEST_DEPLOYMENT:
+      return dummy_inference(data_dict)
    current_state = data_dict['state']
    tracks = parse_data_object(data_dict)
    user_prompt = build_user_message(user, 

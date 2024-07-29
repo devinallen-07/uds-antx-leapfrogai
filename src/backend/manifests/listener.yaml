@@ -60,3 +60,5 @@ spec:
             value: /app/log/
           - name: DATA_DIR
             value: /app/data/
+          - name: IS_TEST_DEPLOYMENT
+            value: "###ZARF_VAR_IS_TEST_DEPLOYMENT###"

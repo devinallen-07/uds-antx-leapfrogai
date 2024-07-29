@@ -10,7 +10,7 @@ from comms.s3 import get_objects, copy_from_s3
 from comms.lfai import build_transcribe_request, chat_completion
 from util.logs import get_logger, setup_logging
 from util.loaders import init_outputs, push_data, get_valkey_keys, test_update
-from util.loaders import push_logs, get_current_state
+from util.loaders import push_logs, get_current_state, TIME_ZONE
 from util.objects import MetricTracker
 from pathlib import Path
 
@@ -64,7 +64,7 @@ def get_audio_metadata(key):
    Y, M, D, track, fname = splits[1:6]
    h,m,s = fname.split(" ")[-1].split("-")[0:3]
    s = s.split("_")[0]
-   start_time = pd.Timestamp(f"{Y}/{M}/{D} {h}:{m}:{s}")
+   start_time = pd.Timestamp(f"{Y}/{M}/{D} {h}:{m}:{s}", tz=TIME_ZONE)
    end_time = start_time + pd.Timedelta(seconds=67)
    return start_time, end_time, track
 

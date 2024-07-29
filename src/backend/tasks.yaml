@@ -19,6 +19,20 @@ tasks:
       - task: build-package
       - task: deploy-package
       - task: registry-down
+  - name: e2e-test
+    description: executes an e2e test (in-cluster)
+    actions:
+      - task: init-testing
+      - cmd: curl localhost:8000/start/
+      - task: upload-test-data
+  - name: init-testing
+    description: Initializes the testing prefix and dataframe
+    actions:
+      - cmd: python test_ingestion.py setup
+  - name: upload-test-data
+    description: starts uploading sample audio files to S3 in a loop
+    actions:
+      - cmd: python test_ingestion.py start_upload
   - name: down
     description: bring everything down
     actions:
@@ -80,7 +94,7 @@ tasks:
   - name: deploy-package-valkey
     description: Deploys the valkey zarf package
     actions:
-      - cmd: uds zarf package deploy valkey/zarf-package-valkey-*.tar.zst --confirm
+      - cmd: cd valkey && uds zarf package deploy zarf-package-valkey-*.tar.zst --confirm
   - name: remove-package-valkey
     description: Removes the valkey zarf package
     actions:

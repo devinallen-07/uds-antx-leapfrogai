@@ -4,7 +4,7 @@ import random
 import string
 import os
 from comms.valkey import get_output_frame, set_output_frame, set_json_data
-from comms.valkey import get_json_data
+from comms.valkey import get_json_data, TIME_ZONE
 from comms.valkey import key_exists, wipe_key, publish_message
 from comms.s3 import WRITE_BUCKET, upload_file
 from util.logs import get_logger
@@ -50,7 +50,7 @@ def wipe_data(key_prefix, run_id):
 
 def init_frame():
    log.info(f'Initializing data frame')
-   start_time = pd.Timestamp('now')
+   start_time = pd.Timestamp('now', tz=TIME_ZONE)
    end_time = start_time
    state = CurrentState.trial_start.value
    seconds_to_state_change = 75
@@ -82,7 +82,7 @@ def get_current_state(valkeys):
    return current_state, delay_reason   
 
 def get_prefix():
-   ts = pd.Timestamp("now", tz="US/Pacific")
+   ts = pd.Timestamp("now", tz=TIME_ZONE)
    y = ts.year
    m = ts.month
    d = ts.day
@@ -196,7 +196,7 @@ def push_data(data, metrics, valkeys):
    push_metrics(metrics, valkeys["metrics_key"])
 
 def test_update(output_key, metrics_key):
-   start_time = pd.Timestamp('now')
+   start_time = pd.Timestamp('now', tz=TIME_ZONE)
    length = random.randint(10, 30)
    change_seconds = int(np.random.normal(120, 45, 1)[0])
    push_data = {
@@ -247,7 +247,7 @@ def create_metrics(metrics):
 def create_metadata(df):
    event_start = df["start"].min().strftime(DATETIME_FORMAT)
    state_change = df["time_to_change"].values[-1]
-   running_clock = pd.Timestamp("now") - df["start"].min()
+   running_clock = pd.Timestamp("now", tz=TIME_ZONE) - df["start"].min()
    running_clock = format_timediff(running_clock.seconds)
    data = {
       "eventStart": event_start,

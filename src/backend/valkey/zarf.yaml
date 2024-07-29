@@ -5,9 +5,15 @@ metadata:
   version: 0.0.1
 variables:
   - name: VALKEY_PASSWORD
-    description: The user to access the argo database in postgres
+    description: The user to access the valkey storage
     prompt: true
 components:
+  - name: antx-setup
+    required: true
+    manifests:
+      - name: namespace
+        files:
+          - manifests/namespace.yaml
   - name: valkey-deployment
     required: true
     charts:

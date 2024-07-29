@@ -1,6 +1,0 @@
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: antx
-  labels:
-    istio-injection: enabled
