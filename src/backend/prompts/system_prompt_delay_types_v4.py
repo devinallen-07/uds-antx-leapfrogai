@@ -55,5 +55,3 @@ Output Format: Return your response as a json object in the following format:\n
     - If predicted state is of type "{delay_start}" then return a Delay Type as well from among the following options: {[k.value for k in DelayTypes]}:
         {{"predicted_state": "Delay Start", "reasoning": "<your reasoning for predicted a Delay Start>", "delay_type": "<delay type>"}}
 ''' 
-if __name__ == '__main__':
-    print([k.value for k in States])
