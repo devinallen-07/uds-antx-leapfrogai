@@ -210,7 +210,7 @@ def transcribe_audio(file_path):
       }
 
       start_time = time.time()
-      response = requests.post(url_transcription, headers=headers, files=files, data=data)
+      response = requests.post(url_transcription, headers=headers, files=files, data=data, verify=False)
       end_time = time.time()
 
    if response.status_code == 200:
@@ -315,7 +315,7 @@ def chat_completion(data_dict: dict,
    }
    try:
       t1 = time.time()
-      response = requests.post(URL_INFERENCE, headers=headers, data=json.dumps(data))
+      response = requests.post(URL_INFERENCE, headers=headers, data=json.dumps(data), verify=False)
       data_dict["inference_seconds"] = time.time() - t1
       if response.status_code == 200:
          if raw:
