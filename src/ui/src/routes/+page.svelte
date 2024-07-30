@@ -60,6 +60,13 @@
 		const newData = await Api.update();
 		updateEventStore(newData);
 	}
+
+	function startUpdateInterval() {
+		setInterval(fetchUpdate, 3000);
+	}
+
+	// Start updating every 3 seconds
+	startUpdateInterval();
 </script>
 
 <ClocksCard {testimonials} />
@@ -76,15 +83,3 @@
 		<PerformanceCard />
 	</AccordionItem>
 </Accordion>
-
-<div class="flex justify-center">
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.start}
-		>Start</Button
-	>
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={fetchUpdate}
-		>Update</Button
-	>
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.end}
-		>End</Button
-	>
-</div>
