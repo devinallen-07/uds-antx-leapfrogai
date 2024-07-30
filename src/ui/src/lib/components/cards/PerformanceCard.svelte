@@ -15,7 +15,7 @@
 			<Badge class="m-0.5 w-1/2" border>{formatNumber($eventStore.performanceMetrics.timeToTranscribePerToken.min)}</Badge>
 			<span>maximum</span>
 			<Badge class="m-0.5 w-1/2" border>{formatNumber($eventStore.performanceMetrics.timeToTranscribePerToken.max)}</Badge>
-			<span>average</span>
+			<span>average (per token)</span>
 			<Badge class="m-0.5 w-1/2" border>{formatNumber($eventStore.performanceMetrics.timeToTranscribePerToken.avg)}</Badge>
 		</div>
 	</div>
