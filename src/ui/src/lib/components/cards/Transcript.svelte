@@ -1,19 +1,45 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, afterUpdate } from 'svelte';
 	import { eventStore } from '../../../stores/stateStore';
 
 	let contentContainer: HTMLElement | null = null;
+	let userScrolling = false;
+	let scrollTimeout: number | null = null;
 
 	onMount(() => {
-		if (contentContainer) {
-			contentContainer.scrollTop = contentContainer.scrollHeight;
-		}
+		scrollToBottom();
 	});
 
-    $: transcriptions = $eventStore.transcription?.speechToText || [];
+	function scrollToBottom() {
+		if (contentContainer && !userScrolling) {
+			contentContainer.scrollTop = contentContainer.scrollHeight;
+		}
+	}
+
+	function handleScroll() {
+		userScrolling = true;
+		if (scrollTimeout) {
+			clearTimeout(scrollTimeout);
+		}
+		scrollTimeout = setTimeout(() => {
+			userScrolling = false;
+		}, 1000) as unknown as number; // 1 second delay
+	}
+
+	$: transcriptions = $eventStore.transcription?.speechToText || [];
+
+	$: if (transcriptions) {
+		afterUpdate(() => {
+			scrollToBottom();
+		});
+	}
 </script>
 
-<div bind:this={contentContainer} class="mx-auto h-48 overflow-auto dark:[color-scheme:dark]">
+<div
+	bind:this={contentContainer}
+	on:scroll={handleScroll}
+	class="mx-auto h-48 overflow-auto dark:[color-scheme:dark]"
+>
 	<ol class="custom-ol rounded-lg p-4 text-white">
 		{#each transcriptions as item}
 			<li>
