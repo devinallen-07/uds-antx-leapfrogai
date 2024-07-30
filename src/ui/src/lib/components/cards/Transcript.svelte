@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	export let list = [''];
+	import { eventStore } from '../../../stores/stateStore';
 
 	let contentContainer: HTMLElement | null = null;
 
@@ -9,11 +9,13 @@
 			contentContainer.scrollTop = contentContainer.scrollHeight;
 		}
 	});
+
+    $: transcriptions = $eventStore.transcription?.speechToText || [];
 </script>
 
 <div bind:this={contentContainer} class="mx-auto h-48 overflow-auto dark:[color-scheme:dark]">
 	<ol class="custom-ol rounded-lg p-4 text-white">
-		{#each list as item}
+		{#each transcriptions as item}
 			<li>
 				<div class="custom-li-content">{item}</div>
 			</li>
