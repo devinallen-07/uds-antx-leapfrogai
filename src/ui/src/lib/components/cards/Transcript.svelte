@@ -54,7 +54,7 @@
 		index: number
 	): { counter: string; timestamp: string; content: string } {
 		const [timestamp, ...contentParts] = item.split(' ');
-		const content = contentParts.join(' ');
+		const content = sanitizeRepeatedWords(contentParts.join(' ')); // Apply sanitization here
 
 		try {
 			const currentTime = parseTimestamp(timestamp);
@@ -76,6 +76,17 @@
 			console.error('Error processing timestamp:', error);
 			return { counter: `${index + 1}`, timestamp: 'N/A', content: item };
 		}
+	}
+
+	function sanitizeRepeatedWords(input: string): string {
+		const words = input.split(/\s+/);
+		const sanitizedWords = words.reduce((acc: string[], word: string) => {
+			if (acc.length === 0 || word.toLowerCase() !== acc[acc.length - 1].toLowerCase()) {
+				acc.push(word);
+			}
+			return acc;
+		}, []);
+		return sanitizedWords.join(' ');
 	}
 
 	$: transcriptions = $eventStore.transcription?.speechToText || [];
