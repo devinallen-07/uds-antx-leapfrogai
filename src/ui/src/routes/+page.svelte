@@ -5,6 +5,7 @@
 	import PerformanceCard from '$lib/components/cards/PerformanceCard.svelte';
 	import { Accordion, AccordionItem, Button } from 'flowbite-svelte';
 	import { Api } from '$lib/api';
+	import { updateEventStore } from '../stores/stateStore';
 
 	const testimonials = [
 		{
@@ -44,6 +45,11 @@
 		'Tango 1: Copy that, Bravo Actual. We will proceed with caution, over.',
 		'short line'
 	];
+
+	async function fetchUpdate() {
+		const newData = await Api.update();
+		updateEventStore(newData);
+	}
 </script>
 
 <ClocksCard {testimonials} />
@@ -62,7 +68,13 @@
 </Accordion>
 
 <div class="flex justify-center">
-	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.start}>Start</Button>
-	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.update}>Update</Button>
-	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.end}>End</Button>
+	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.start}
+		>Start</Button
+	>
+	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={fetchUpdate}
+		>Update</Button
+	>
+	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.end}
+		>End</Button
+	>
 </div>

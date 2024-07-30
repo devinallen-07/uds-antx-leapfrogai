@@ -8,3 +8,4 @@ export const Api = {
 	update: () => http.get<EventInformation>('/update/'),
 	end: () => http.get<EventInformation>('/end/')
 };
+
