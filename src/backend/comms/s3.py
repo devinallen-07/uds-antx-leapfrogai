@@ -9,8 +9,6 @@ REGION = os.environ.get('S3_REGION', None)
 ENDPOINT = os.environ.get('S3_ENDPOINT', 'http://localhost:9000')
 WRITE_BUCKET = os.environ.get('WRITE_BUCKET', 'uds')
 READ_BUCKET = os.environ.get('READ_BUCKET', 'uds')
-WRITE_BUCKET = os.environ.get('WRITE_BUCKET', 'uds')
-READ_BUCKET = os.environ.get('READ_BUCKET', 'uds')
 
 def get_s3_client():
    """Returns boto3 s3 client from environment variables"""
@@ -21,22 +19,38 @@ def get_s3_client():
                        aws_access_key_id=access_key,
                        aws_secret_access_key=secret_key)
 
-def get_objects(prefix="", bucket=READ_BUCKET):
+def get_objects(prefix="", bucket=READ_BUCKET, endswith=".mp3"):
    """Returns a list of keys for objects in a bucket
       :param prefix: Filters the bucket for keys that begin with prefix
       :param bucket: Bucket to return objects of
+      :param endswith: Only include keys that endwith this string
       :returns: List of file keys in the bucket
    """
    s3 = get_s3_client()
-   try:
-      response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
-   except Exception as e:
-      log.warning(f'Error listing objects in {bucket}: {e}')
-      log.warning(traceback.format_exc())
-      return None
-   if 'Contents' not in response:
-      return []
-   file_list = [x['Key'] for x in response['Contents']]
+   new_files = []
+   file_list = []
+   continuation = None
+   truncated = True
+   kwargs = {"Bucket":bucket, "Prefix":prefix}
+   while truncated:
+      if continuation:
+         kwargs["ContinuationToken"] = continuation
+      try:
+         response = s3.list_objects_v2(**kwargs)
+      except Exception as e:
+         log.warning(f'Error listing objects in {bucket}: {e}')
+         log.warning(traceback.format_exc())
+         return file_list
+      if 'Contents' not in response:
+         return file_list
+      else:
+         new_files = [x['Key'] for x in response['Contents'] if x['Key'].endswith(endswith)]
+         file_list = file_list + new_files
+         truncated = response["IsTruncated"]
+         log.info(f"Keys found: {len(file_list)}, truncated:{truncated}")
+         truncated = response["IsTruncated"]
+         if truncated:
+            continuation = response["NextContinuationToken"]
    return file_list
 
 def upload_file(file_path, key, bucket=WRITE_BUCKET):

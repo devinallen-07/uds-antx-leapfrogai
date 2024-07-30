@@ -92,7 +92,8 @@ def get_start_times(keys, current_state, delay_type):
    start_times = []
    for key in keys:
       start_time, end_time, track = get_audio_metadata(key)
-      log.info(f"{key} metadata: {start_time}, {end_time}, {track}")
+      if track == "track2":
+         continue
       if start_time not in data:
          start_times.append(start_time)
          data[start_time] = {
@@ -127,16 +128,16 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
       }
    """
    processed_files = get_json_data(valkey_keys['files_key'])
-   log.info(f"Keys to process: {keys}")
+   log.info(f"Keys to process: {len(keys)}")
    data = {}
    current_state, delay_type = get_current_state(valkey_keys)
-   if not current_state.startswith("Delay"):
-      delay_type = ""
    data, start_times = get_start_times(keys, current_state, delay_type)
    log.info(f"{data}")
    log.info(f"{start_times}")
    for start_time in start_times:
       data_dict = data[start_time]
+      data_dict["state"] = current_state
+      data_dict["delay_type"] = delay_type
       batch_files = []
       for key, value in data_dict.items():
          if key.startswith("track"):
@@ -154,6 +155,8 @@ def process_batch(keys: list, valkey_keys:dict, bucket:str,
          processed_files.append(key)
       try:
          data_dict = chat_completion(data_dict)
+         current_state = data_dict["state"]
+         delay_type = data_dict["delay_type"]
          metrics.update_inferences(data_dict["inference_seconds"])
       except Exception as e:
          log.warning(f'Error inferring with data {data_dict}: {e}')
