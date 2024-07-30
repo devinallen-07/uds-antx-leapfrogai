@@ -22,9 +22,19 @@
 		}
 	];
 
-	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'Trial End', 'RTB'];
+	const states = [
+		{ name: 'Pre Trial Start', isCurrent: true },
+		{ name: 'Trial Start', isCurrent: false },
+		{ name: 'In Transit', isCurrent: false },
+		{ name: 'Mistrial', isCurrent: false },
+		{ name: 'Trial End', isCurrent: false },
+		{ name: 'RTB', isCurrent: false }
+	];
 
-	const delayStates = ['Delay Start', 'Delay End'];
+	const delayStates = [
+		{ name: 'Delay Start', isCurrent: false },
+		{ name: 'Delay End', isCurrent: false }
+	];
 
 	const dummyTranscript = [
 		'Alpha: Tango 1, this is Bravo Actual, over.',
