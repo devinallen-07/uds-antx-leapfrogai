@@ -25,7 +25,7 @@
 	}
 
 	.glow-border {
-	  animation: glow 1s infinite;
+	  animation: glow 2s infinite;
 	}
 
 	.glow-border-inactive {
