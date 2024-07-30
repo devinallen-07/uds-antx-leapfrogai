@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.uds.dev';
+const BASE_URL = 'http://localhost:8000';
 
 interface APIRequest<T> {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
