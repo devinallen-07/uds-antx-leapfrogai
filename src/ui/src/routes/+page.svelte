@@ -22,9 +22,19 @@
 		}
 	];
 
-	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'Trial End', 'RTB'];
+	const states = [
+		{ state: 'Pre Trial Start', isCurrent: true },
+		{ state: 'Trial Start', isCurrent: false },
+		{ state: 'In Transit', isCurrent: false },
+		{ state: 'Mistrial', isCurrent: false },
+		{ state: 'Trial End', isCurrent: false },
+		{ state: 'RTB', isCurrent: false }
+	];
 
-	const delayStates = ['Delay Start', 'Delay End'];
+	const delayStates = [
+		{ state: 'Delay Start', isCurrent: false },
+		{ state: 'Delay End', isCurrent: false }
+	];
 
 	const dummyTranscript = [
 		'Alpha: Tango 1, this is Bravo Actual, over.',
@@ -50,6 +60,13 @@
 		const newData = await Api.update();
 		updateEventStore(newData);
 	}
+
+	function startUpdateInterval() {
+		setInterval(fetchUpdate, 3000);
+	}
+
+	// Start updating every 3 seconds
+	startUpdateInterval();
 </script>
 
 <ClocksCard {testimonials} />
@@ -66,15 +83,3 @@
 		<PerformanceCard />
 	</AccordionItem>
 </Accordion>
-
-<div class="flex justify-center">
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.start}
-		>Start</Button
-	>
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={fetchUpdate}
-		>Update</Button
-	>
-	<Button class="m-2 mt-8 border dark:bg-gray-700" color="primary" size="lg" on:click={Api.end}
-		>End</Button
-	>
-</div>
