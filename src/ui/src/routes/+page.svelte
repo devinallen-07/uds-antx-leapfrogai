@@ -7,15 +7,6 @@
 	import { Api } from '$lib/api';
 	import { updateEventStore } from '../stores/stateStore';
 
-	const states = [
-		{ state: 'Pre Trial Start', isCurrent: true },
-		{ state: 'Trial Start', isCurrent: false },
-		{ state: 'In Transit', isCurrent: false },
-		{ state: 'Mistrial', isCurrent: false },
-		{ state: 'Trial End', isCurrent: false },
-		{ state: 'RTB', isCurrent: false }
-	];
-
 	const delayStates = [
 		{ state: 'Delay Start', isCurrent: false },
 		{ state: 'Delay End', isCurrent: false }
@@ -54,8 +45,8 @@
 </script>
 
 <ClocksCard />
-<StateCard list={states} />
-<StateCard list={delayStates} />
+<StateCard />
+<!-- <StateCard list={delayStates} /> -->
 
 <Accordion multiple class="mx-auto w-5/6">
 	<AccordionItem open>
