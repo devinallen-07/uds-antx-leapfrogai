@@ -13,7 +13,7 @@ components:
     manifests:
       - name: namespace
         files:
-          - manifests/namespace.yaml
+          - ../manifests/namespace.yaml
   - name: valkey-deployment
     required: true
     charts:

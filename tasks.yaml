@@ -9,7 +9,8 @@ tasks:
   - name: cluster-up
     description: Deploy k3d test cluster
     actions:
-      - task: setup:k3d-test-cluster
+      # - task: setup:k3d-test-cluster
+      - task: uds deploy uds-bundle-k3d-core-slim-dev-*.tar.zst --confirm
 
   - name: destroy
     description: Destroy the K3d cluster
