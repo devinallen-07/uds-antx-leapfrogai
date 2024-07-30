@@ -18,8 +18,6 @@ def upload_dummy_data(prefix, iters):
       for track in range(4):
          file_path = f"./test/audio/{choices[track]}"
          track += 1
-         if track == 2:
-            continue
          ts = pd.Timestamp('now', tz="US/Pacific")
          y = ts.year
          m = ts.month
