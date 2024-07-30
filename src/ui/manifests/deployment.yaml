@@ -4,7 +4,7 @@ metadata:
   labels:
     app: ui
   name: ui
-  namespace: antx
+  namespace: antx-ui
 spec:
   replicas: 1
   selector:
@@ -16,9 +16,9 @@ spec:
         app: ui
     spec:
       containers:
-      - image: ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1
+      - name: ui
+        image: ghcr.io/defenseunicorns-dashdays/uds-antx-leapfrogai/ui:0.0.1
         imagePullPolicy: Always
-        name: ui
         resources:
           requests:
             cpu: "100m"

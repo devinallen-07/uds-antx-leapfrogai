@@ -7,34 +7,15 @@ includes:
 
 tasks:
   - name: cluster-up
-    description: Build and deploy SWF on UDS k3d-slim-dev
+    description: Deploy k3d test cluster
     actions:
-      - task: setup:k3d-test-cluster
-
-  - name: deploy-bundle
-    description: Deploy ANTX UDS Bundle
-    actions:
-      - task: deploy:test-bundle
+      # - task: setup:k3d-test-cluster
+      - task: uds deploy uds-bundle-k3d-core-slim-dev-*.tar.zst --confirm
 
   - name: destroy
     description: Destroy the K3d cluster
     actions:
       - cmd: k3d cluster delete -a
-
-  - name: create-bundle
-    description: Create the ANTX UDS Bundle
-    actions:
-      - task: package
-      - task: create:test-bundle
-        with:
-          path: bundle
-          options: -o build
-
-  - name: package
-    description: Package(zarf) the ANTX Application
-    actions:
-      - cmd: mkdir -p build
-      - task: package-ui
 
   - name: clean
     description: take out the trash
@@ -51,6 +32,7 @@ tasks:
   - name: package-ui
     description: Package(zarf) the UI image
     actions:
+      - cmd: mkdir -p build
       - task: build-ui-image
       - task: create:package
         with:

@@ -1,7 +1,7 @@
 apiVersion: uds.dev/v1alpha1
 kind: Package
 metadata:
-  name: antx
+  name: antx-ui
   namespace: antx-ui
 spec:
   network:
@@ -14,6 +14,7 @@ spec:
         port: 3000
     allow:
       - direction: Ingress
-        remoteGenerated: IntraNamespace
+        remoteGenerated: Anywhere
       - direction: Egress
-        remoteGenerated: IntraNamespace
+        remoteGenerated: Anywhere
+

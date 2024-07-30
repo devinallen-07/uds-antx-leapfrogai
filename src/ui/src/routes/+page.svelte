@@ -3,7 +3,8 @@
 	import StateCard from '$lib/components/cards/StateCard.svelte';
 	import Transcript from '$lib/components/cards/Transcript.svelte';
 	import PerformanceCard from '$lib/components/cards/PerformanceCard.svelte';
-	import { Accordion, AccordionItem } from 'flowbite-svelte';
+	import { Accordion, AccordionItem, Button } from 'flowbite-svelte';
+	import { Api } from '$lib/api';
 
 	const testimonials = [
 		{
@@ -20,7 +21,7 @@
 		}
 	];
 
-	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'RTB', 'Trial End'];
+	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'Trial End', 'RTB'];
 
 	const delayStates = ['Delay Start', 'Delay End'];
 
@@ -59,3 +60,9 @@
 		<PerformanceCard />
 	</AccordionItem>
 </Accordion>
+
+<div class="flex justify-center">
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.start}>Start</Button>
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.update}>Update</Button>
+	<Button class="m-2 mt-8 dark:bg-gray-700 border" color="primary" size="lg" on:click={Api.end}>End</Button>
+</div>
