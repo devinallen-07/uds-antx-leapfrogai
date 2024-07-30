@@ -1,0 +1,20 @@
+apiVersion: uds.dev/v1alpha1
+kind: Package
+metadata:
+  name: antx-ui
+  namespace: antx-ui
+spec:
+  network:
+    expose:
+      - service: ui
+        selector:
+          app: ui
+        host: antx
+        gateway: tenant
+        port: 3000
+    allow:
+      - direction: Ingress
+        remoteGenerated: Anywhere
+      - direction: Egress
+        remoteGenerated: Anywhere
+

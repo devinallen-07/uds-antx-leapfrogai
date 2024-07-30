@@ -21,7 +21,7 @@
 		}
 	];
 
-	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'RTB', 'Trial End'];
+	const states = ['Pre Trial Start', 'Trial Start', 'In Transit', 'Mistrial', 'Trial End', 'RTB'];
 
 	const delayStates = ['Delay Start', 'Delay End'];
 

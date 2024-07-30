@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api-service.antx.svc.cluster.local:8000';
+const BASE_URL = 'https://api.uds.dev';
 
 interface APIRequest<T> {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -6,7 +6,8 @@ interface APIRequest<T> {
 }
 
 const headers = new Headers({
-	'Content-Type': 'application/json'
+	'Content-Type': 'application/json',
+	'Access-Control-Allow-Origin': '*'
 });
 
 export class HTTP {
@@ -16,7 +17,8 @@ export class HTTP {
 
 	private async request<T>(req: APIRequest<T>): Promise<T> {
 		const url = BASE_URL + req.path;
-		const payload: RequestInit = { method: req.method, headers };
+		const payload: RequestInit = { method: req.method, headers, mode: 'no-cors' };
+		console.log('HTTP request URL: ', url);
 
 		try {
 			const response = await fetch(url, payload);
