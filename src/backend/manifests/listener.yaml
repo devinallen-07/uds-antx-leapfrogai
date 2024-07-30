@@ -33,7 +33,7 @@ spec:
             cpu: 500m
             memory: 528M
           limits:
-            cpu: 1
+            cpu: 500m
             memory: 2Gi
         env:
           - name: READ_BUCKET
