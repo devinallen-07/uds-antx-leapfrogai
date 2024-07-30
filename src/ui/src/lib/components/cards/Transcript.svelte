@@ -52,7 +52,7 @@
 	function processTimestamp(
 		item: string,
 		index: number
-	): { formattedTime: string; content: string } {
+	): { counter: string; timestamp: string; content: string } {
 		const [timestamp, ...contentParts] = item.split(' ');
 		const content = contentParts.join(' ');
 
@@ -68,12 +68,13 @@
 			const delta = formatDelta(deltaMs);
 			const time = formatTime(date);
 
-			const formattedTime = `${index + 1} ${time} (${delta})`;
+			const counter = `${index + 1}`;
+			const formattedTime = `${time} (${delta})`;
 
-			return { formattedTime, content };
+			return { counter, timestamp: formattedTime, content };
 		} catch (error) {
 			console.error('Error processing timestamp:', error);
-			return { formattedTime: `${index + 1} N/A`, content: item };
+			return { counter: `${index + 1}`, timestamp: 'N/A', content: item };
 		}
 	}
 
@@ -94,9 +95,10 @@
 >
 	<ul class="custom-ul rounded-lg p-4 text-white">
 		{#each transcriptions as item, index}
-			{@const { formattedTime, content } = processTimestamp(item, index)}
+			{@const { counter, timestamp, content } = processTimestamp(item, index)}
 			<li class="custom-li">
-				<span class="timestamp">{formattedTime}</span>
+				<span class="counter">{counter}</span>
+				<span class="timestamp">{timestamp}</span>
 				<span class="content">{content}</span>
 			</li>
 		{/each}
@@ -126,5 +128,12 @@
 
 	.content {
 		word-break: break-word;
+	}
+
+	.counter {
+		display: inline-block;
+		width: 2em; /* Adjust as needed */
+		margin-right: 4px;
+		text-align: right;
 	}
 </style>
