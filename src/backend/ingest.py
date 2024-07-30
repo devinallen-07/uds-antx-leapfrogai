@@ -30,8 +30,11 @@ def get_files_to_process(file_key, bucket, prefix=""):
    file_list = get_objects(prefix, bucket)
    to_process = []
    for filename in file_list:
-      if filename not in processed_files and filename.endswith('.mp3'):
+      if filename not in processed_files:
          to_process.append(filename)
+         if "track2" in filename:
+            processed_files.append(filename)
+   set_json_data(file_key, processed_files)
    return to_process
 
 def send_sos(prefix, bucket,run_id, trc, restart):
