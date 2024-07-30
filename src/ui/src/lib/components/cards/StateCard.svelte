@@ -1,12 +1,12 @@
 <script>
 	import { Card } from 'flowbite-svelte';
-	export let list = [{ name: '', isCurrent: true }];
+	export let list = [{ state: '', isCurrent: true }];
 </script>
 
 <div class="m-4 flex flex-wrap justify-center dark:text-white">
-	{#each list as { name, isCurrent }}
+	{#each list as { state, isCurrent }}
 		<div class="m-2 min-w-[200px] text-center {isCurrent ? 'glow-border' : 'glow-border-inactive'} border-transparent rounded-lg">
-			<Card color="primary" class="dark:bg-gray-700">{name}</Card>
+			<Card color="primary" class="dark:bg-gray-700">{state}</Card>
 		</div>
 	{/each}
 </div>

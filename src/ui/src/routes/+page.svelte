@@ -23,17 +23,17 @@
 	];
 
 	const states = [
-		{ name: 'Pre Trial Start', isCurrent: true },
-		{ name: 'Trial Start', isCurrent: false },
-		{ name: 'In Transit', isCurrent: false },
-		{ name: 'Mistrial', isCurrent: false },
-		{ name: 'Trial End', isCurrent: false },
-		{ name: 'RTB', isCurrent: false }
+		{ state: 'Pre Trial Start', isCurrent: true },
+		{ state: 'Trial Start', isCurrent: false },
+		{ state: 'In Transit', isCurrent: false },
+		{ state: 'Mistrial', isCurrent: false },
+		{ state: 'Trial End', isCurrent: false },
+		{ state: 'RTB', isCurrent: false }
 	];
 
 	const delayStates = [
-		{ name: 'Delay Start', isCurrent: false },
-		{ name: 'Delay End', isCurrent: false }
+		{ state: 'Delay Start', isCurrent: false },
+		{ state: 'Delay End', isCurrent: false }
 	];
 
 	const dummyTranscript = [
