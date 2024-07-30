@@ -4,7 +4,7 @@ metadata:
   labels:
     app: ui
   name: ui
-  namespace: antx
+  namespace: antx-ui
 spec:
   ports:
     - name: "3000"

@@ -2,7 +2,7 @@ apiVersion: uds.dev/v1alpha1
 kind: Package
 metadata:
   name: antx
-  namespace: antx
+  namespace: antx-ui
 spec:
   network:
     expose:
