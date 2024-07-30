@@ -23,7 +23,7 @@ def get_objects(prefix="", bucket=READ_BUCKET, endswith=".mp3"):
    """Returns a list of keys for objects in a bucket
       :param prefix: Filters the bucket for keys that begin with prefix
       :param bucket: Bucket to return objects of
-      :param endswith: Only include keys that endwith this string
+      :param endswith: Only include keys that endswith this string
       :returns: List of file keys in the bucket
    """
    s3 = get_s3_client()
