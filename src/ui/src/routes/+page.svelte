@@ -7,21 +7,6 @@
 	import { Api } from '$lib/api';
 	import { updateEventStore } from '../stores/stateStore';
 
-	const testimonials = [
-		{
-			title1: 'Event Start',
-			title2: '00:00:00 Z'
-		},
-		{
-			title1: 'Time to next State',
-			title2: '00:00:00 Z'
-		},
-		{
-			title1: 'Running Clock',
-			title2: '00:00:00 Z'
-		}
-	];
-
 	const states = [
 		{ state: 'Pre Trial Start', isCurrent: true },
 		{ state: 'Trial Start', isCurrent: false },
@@ -65,11 +50,10 @@
 		setInterval(fetchUpdate, 3000);
 	}
 
-	// Start updating every 3 seconds
 	startUpdateInterval();
 </script>
 
-<ClocksCard {testimonials} />
+<ClocksCard />
 <StateCard list={states} />
 <StateCard list={delayStates} />
 
