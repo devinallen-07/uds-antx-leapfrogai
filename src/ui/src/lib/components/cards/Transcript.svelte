@@ -53,8 +53,8 @@
 		item: string,
 		index: number
 	): { counter: string; timestamp: string; content: string } {
-		const [timestamp, ...contentParts] = item.split(' ');
-		const content = sanitizeRepeatedWords(contentParts.join(' ')); // Apply sanitization here
+		const [timestamp, ...contentParts] = item.split(': ');
+		const content = sanitizeRepeatedWords(contentParts.join(': ')); // Apply sanitization here
 
 		try {
 			const currentTime = parseTimestamp(timestamp);
@@ -89,7 +89,13 @@
 		return sanitizedWords.join(' ');
 	}
 
-	$: transcriptions = $eventStore.transcription?.speechToText || [];
+	function filterTranscriptions(transcriptions: string[]): string[] {
+		return transcriptions.filter(
+			(line) => line.match(/^.*(?:ICOM:|TD:|CG:)\s+\S.*$/)
+		);
+	}
+
+	$: transcriptions = filterTranscriptions($eventStore.transcription?.speechToText || []);
 
 	$: if (transcriptions) {
 		firstTimestamp = null; // Reset first timestamp when transcriptions change
