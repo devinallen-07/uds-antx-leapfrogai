@@ -4,10 +4,10 @@
 
 	const mainStates = [
 		'Pre Trial Start',
-		'Trial Start',
-		'Trial End',
 		'In Transit',
+		'Trial Start',
 		'Mistrial',
+		'Trial End',
 		'RTB'
 	];
 
