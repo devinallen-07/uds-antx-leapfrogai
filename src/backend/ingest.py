@@ -76,7 +76,10 @@ def ingest_file(key: str,
                 metrics: MetricTracker,
                 bucket: str):
    new_path = data_dir + key.split('/')[-1]
+   start_time = time.time()
    success = copy_from_s3(bucket, key, new_path)
+   elapsed_time = time.time() - start_time
+   log.debug(f"S3 Download(s): {elapsed_time} --- key: {key} bucket: {bucket}")
    if not success:
       log.warning(f'Skipping key {key}: could not copy from s3')
       return False
