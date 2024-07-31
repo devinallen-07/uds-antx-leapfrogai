@@ -6,12 +6,14 @@
 		'Pre Trial Start',
 		'In Transit',
 		'Trial Start',
+		'Delay Start',
+		'Delay End',
 		'Mistrial',
 		'Trial End',
 		'RTB'
 	];
 
-	const delayStates = ['Delay Start', 'Delay End'];
+	// const delayStates = ['Delay Start', 'Delay End'];
 </script>
 
 <div class="m-4 flex flex-col items-center dark:text-white">
@@ -27,7 +29,7 @@
 		{/each}
 	</div>
 
-	<div class="mt-4 flex flex-wrap justify-center">
+	<!-- <div class="mt-4 flex flex-wrap justify-center">
 		{#each delayStates as state}
 			<div
 				class="m-2 min-w-[200px] text-center {$eventStore.state.currentState === state
@@ -37,7 +39,7 @@
 				<Card color="primary" class="dark:bg-gray-700">{state}</Card>
 			</div>
 		{/each}
-	</div>
+	</div> -->
 </div>
 
 <style>
