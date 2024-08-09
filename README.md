@@ -29,13 +29,15 @@ You have 3 options described in these instructions, choose the one that fits you
 
 **Note:** The frontend and backend components are separated to allow for easier deployment and updates. A production deployment would combine these components into a single artifact and build differential bundles for updates via Continuous Delivery.
 
+1. Update values in `src/backend/test/zarf-config-dev.yaml` to match your environment
+
 1. Deploy the UDS ANTX Backend
 ```sh
 cd src/backend
 uds run up
 ```
 
-2. Deploy the UDS ANTX Frontend
+1. Deploy the UDS ANTX Frontend
 ```sh
 cd ../..
 uds run update-ui
