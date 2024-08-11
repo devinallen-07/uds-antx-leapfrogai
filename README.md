@@ -23,7 +23,7 @@ You have 3 options described in these instructions, choose the one that fits you
 2. [Deploy UDS LeapfrogAI using GPU](docs/deployments.md#gpu-deployment)
 3. [Deploy UDS LeapfrogAI using WSL2 GPU](docs/deployments.md#wsl2-gpu-deployment)
 
-**Note:** The challenge deployment was deployed to a laptop with Intel i9 CPU, NVIDIA 4090 GPU, 64GB RAM, and 2TB (NVMe) SSD disk.
+**Note:** The challenge deployment was deployed to on a laptop running Ubuntu 22.04 via WSL2 and Intel i9 CPU, NVIDIA 4090 GPU, 64GB RAM, and 2TB (NVMe) SSD disk.
 
 ### Deploy UDS ANTX Solution
 
