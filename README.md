@@ -31,7 +31,7 @@ You have 3 options described in these instructions, choose the one that fits you
 
 1. Update values in `src/backend/test/zarf-config-dev.yaml` to match your environment
 
-1. Deploy the UDS ANTX Backend
+2. Deploy the UDS ANTX Backend
 ```sh
 cd src/backend
 uds run up
