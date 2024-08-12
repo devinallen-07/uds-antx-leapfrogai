@@ -81,7 +81,7 @@ uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
 - If `supabase-auth` fails to deploy correctly, suggest restarting `pepr-uds-core-watcher` as there is a race condition that is in the queue to fix
 
 ### Deploy whisper-distil
-(note this is a prebuild zarf package with different configurations than base whisper)
+(note this is a prebuilt zarf package with different configurations than base whisper and requires modifying the whisper DOCKERFILE)
 
 `uds zarf package deploy distil-large-v2-zarf-package-whisper-amd64-dev.tar.zst`
 
