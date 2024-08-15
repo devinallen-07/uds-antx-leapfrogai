@@ -1,11 +1,47 @@
 # uds-antx-leapfrogai
 
-[![Latest Release](https://img.shields.io/github/v/release/defenseunicorns-dashdays/uds-antx-leapfrogai)](https://github.com/defenseunicorns-dashdays/uds-antx-leapfrogai/releases)
 [![UDS-Core](https://img.shields.io/github/v/release/defenseunicorns/uds-core?filter=v0.24.0&label=using%20UDS-Core)](https://github.com/defenseunicorns/uds-core/releases/tag/v0.24.0)
 [![LeapfrogAI](https://img.shields.io/github/v/release/defenseunicorns/leapfrogai?filter=v0.9.1&label=using%20LeapfrogAI)](https://github.com/defenseunicorns/leapfrogai/releases/tag/v0.9.1)
 
 
 AI ANTX (Advanced Naval Technology Exercise) FY24 Challenge seeks advanced ML algorithms for translating spoken language into state information at a maritime test event [link](https://www.challenge.gov/?challenge=artificial-intelligence-advanced-naval-technology-exercise-ai-antx-fy24-challenge&tab=judging).
+
+## Quick Start
+
+These instructions will stand up a UDS Cluster with LeapfrogAI and deploy the UDS ANTX solution.
+
+pre-requisites:
+- Install [Docker](https://docs.docker.com/get-docker/) (or similar container runtime)
+- Install [K3D](https://k3d.io/#installation)
+- Install [UDS CLI](https://uds.defenseunicorns.com/cli/quickstart-and-usage/#install)
+
+### UDS Core and LeapfrogAI
+
+You have 3 options described in these instructions, choose the one that fits your infrastructure.
+
+1. [Deploy UDS LeapfrogAI using CPU](docs/deployments.md#cpu-deployment)
+2. [Deploy UDS LeapfrogAI using GPU](docs/deployments.md#gpu-deployment)
+3. [Deploy UDS LeapfrogAI using WSL2 GPU](docs/deployments.md#wsl2-gpu-deployment)
+
+**Note:** The challenge deployment was deployed to on a laptop running Ubuntu 22.04 via WSL2 and Intel i9 CPU, NVIDIA 4090 GPU, 64GB RAM, and 2TB (NVMe) SSD disk.
+
+### Deploy UDS ANTX Solution
+
+**Note:** The frontend and backend components are separated to allow for easier deployment and updates. A production deployment would combine these components into a single artifact and build differential bundles for updates via Continuous Delivery.
+
+1. Update values in `src/backend/test/zarf-config-dev.yaml` to match your environment
+
+2. Deploy the UDS ANTX Backend
+```sh
+cd src/backend
+uds run up
+```
+
+1. Deploy the UDS ANTX Frontend
+```sh
+cd ../..
+uds run update-ui
+```
 
 ## Challenge Description High Level
 

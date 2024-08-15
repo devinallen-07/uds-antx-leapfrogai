@@ -8,9 +8,11 @@ Deploy UDS LeapfrogAI using [these instructions](https://docs.leapfrog.ai/docs/l
 
 ```sh
 # First Clone LeapfrogAI repo
-cd uds-bundles/latest/cpu/
+git clone https://github.com/defenseunicorns/leapfrogai.git
+
+cd leapfrogai/uds-bundles/latest/cpu/
 uds create .
-uds deploy k3d-core-slim-dev:0.23.0      # be sure to check if a newer version exists
+uds deploy k3d-core-slim-dev:0.24.0
 uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
 
 ```
@@ -29,9 +31,11 @@ Note: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native
 
 ```sh
 # First Clone LeapfrogAI repo
-cd uds-bundles/latest/gpu/
+git clone https://github.com/defenseunicorns/leapfrogai.git
+
+cd leapfrogai/uds-bundles/latest/gpu/
 uds create .
-uds deploy k3d-core-slim-dev:0.23.0 --set K3D_EXTRA_ARGS="--gpus=all --image=ghcr.io/justinthelaw/k3d-gpu-support:v1.27.4-k3s1-cuda" --confirm
+uds deploy k3d-core-slim-dev:0.24.0 --set K3D_EXTRA_ARGS="--gpus=all --image=ghcr.io/justinthelaw/k3d-gpu-support:v1.27.4-k3s1-cuda" --confirm
 uds deploy uds-bundle-leapfrogai-*.tar.zst --confirm
 ```
 
@@ -71,6 +75,3 @@ cd ../..
 uds run package # builds the frontend image and zarf package
 uds zarf package deploy build/zarf-package-*.tar.zst --confirm
 ```
-TODO:
-- [ ] Migrate each of these steps to the top level tasks file
-- [ ] Combine the zarf packages and zarf-config options into a UDS Bundle
