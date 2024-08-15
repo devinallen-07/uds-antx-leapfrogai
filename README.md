@@ -1,7 +1,7 @@
 # uds-antx-leapfrogai
 
 [![UDS-Core](https://img.shields.io/github/v/release/defenseunicorns/uds-core?filter=v0.24.0&label=using%20UDS-Core)](https://github.com/defenseunicorns/uds-core/releases/tag/v0.24.0)
-[![LeapfrogAI](https://img.shields.io/github/v/release/defenseunicorns/leapfrogai?filter=v0.9.1&label=using%20LeapfrogAI)](https://github.com/defenseunicorns/leapfrogai/releases/tag/v0.9.1)
+[![LeapfrogAI](https://img.shields.io/github/v/release/defenseunicorns/leapfrogai?filter=v0.10.0&label=using%20LeapfrogAI)](https://github.com/defenseunicorns/leapfrogai/releases/tag/v0.10.0)
 
 
 AI ANTX (Advanced Naval Technology Exercise) FY24 Challenge seeks advanced ML algorithms for translating spoken language into state information at a maritime test event [link](https://www.challenge.gov/?challenge=artificial-intelligence-advanced-naval-technology-exercise-ai-antx-fy24-challenge&tab=judging).
