@@ -12,8 +12,8 @@ READ_BUCKET = os.environ.get('READ_BUCKET', 'uds')
 
 def get_s3_client():
    """Returns boto3 s3 client from environment variables"""
-   access_key = os.environ.get('S3_ACCESS_KEY', "9GHSyatJi0LlWfecGT7K")
-   secret_key = os.environ.get('S3_SECRET_KEY', "cE1buvYmHR1KEa3B4p2k1LQgvtoT9JfisvbxzYKX")
+   access_key = os.environ.get('S3_ACCESS_KEY', "9GHSyatJi0LlWfecGT7K")  # hardcoded Minio key for testing purposes
+   secret_key = os.environ.get('S3_SECRET_KEY', "cE1buvYmHR1KEa3B4p2k1LQgvtoT9JfisvbxzYKX")  # hardcoded Minio key for testing purposes
    return boto3.client('s3', endpoint_url=ENDPOINT,
                        region_name=REGION,
                        aws_access_key_id=access_key,
